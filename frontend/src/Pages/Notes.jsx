@@ -80,17 +80,20 @@ useEffect(() => {
         No Notes To Display!
       </Typography>
      ): 
-     <Grid container spacing={2}>
-     {notes.map(note => {
-       return <NoteCard key={note['id']} 
-       notes={notes}
-       title={note['title']} 
-       content={note['content']} 
-       created_at={note['created_at']} 
-       importance={note['importance']}
-       id={note['id']}
-        />
-     })}
+     <Grid container spacing={2} >
+     {notes.map(note => (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={note['id']} >
+        <NoteCard 
+        notes={notes}
+        title={note['title']} 
+        content={note['content']} 
+        created_at={note['created_at']} 
+        importance={note['importance']}
+        id={note['id']}
+         />
+
+      </Grid>
+     ))}
    </Grid>}
 
     </Box>
