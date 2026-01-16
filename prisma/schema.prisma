@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  binaryTargets   = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  notes     Note[]
+  todos     Todo[]
+  createdAt DateTime @default(now()) @map("date_joined")
+
+  @@map("auth_user")
+}
+
+model Note {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  importance String
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @map("user_id")
+
+  @@map("api_note")
+}
+
+model Todo {
+  id         Int      @id @default(autoincrement())
+  title      String
+  importance String
+  checked    Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @map("user_id")
+
+  @@map("api_todo")
+}
