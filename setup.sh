@@ -10,5 +10,8 @@ fi
 # install dependencies
 pnpm install
 
+# generate prisma client
+npx prisma generate
+
 # run server
 ./run.sh

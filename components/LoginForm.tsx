@@ -61,18 +61,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                width: "100%",
-                maxWidth: 400,
+                width: 350,
                 p: 4,
-                bgcolor: "background.paper",
-                borderRadius: 2,
-                boxShadow: 3,
+                bgcolor: "#fff",
+                borderRadius: "0.5em",
+                boxShadow: "0.3em 0.3em 0.5em rgba(0, 0, 0, 0.1)",
             }}
         >
-            <Typography variant="h5" color="primary" gutterBottom sx={{ fontWeight: 700 }}>
+            <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
                 Login
             </Typography>
-            <Divider sx={{ width: "100%", mb: 3 }} />
+            <Divider sx={{ width: "80%", mb: 2 }} />
 
             <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <TextField
@@ -125,25 +124,38 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
                     fullWidth
                     type="submit"
                     variant="contained"
-                    size="large"
                     disabled={loading}
-                    sx={{ mt: 3, py: 1.5, fontWeight: 700 }}
+                    sx={{ mt: 2, py: 1 }}
                 >
                     {loading ? "Logging in..." : "Login"}
                 </Button>
             </form>
 
-            <Box sx={{ mt: 3, width: "100%", display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="body2">
-                    New here?{" "}
-                    <Typography
-                        component="span"
-                        color="primary"
-                        sx={{ cursor: "pointer", fontWeight: 600 }}
-                        onClick={toggle}
-                    >
-                        Sign Up
-                    </Typography>
+            <Divider sx={{ width: "80%", mt: 2, mb: 1 }} />
+
+            <Box sx={{ width: "80%", display: "flex", justifyContent: "space-between", pb: 1 }}>
+                <Typography
+                    variant="body2"
+                    color="primary"
+                    sx={{
+                        cursor: "pointer",
+                        fontSize: "0.9em",
+                        "&:hover": { textDecoration: "underline" },
+                    }}
+                >
+                    Forgot Password
+                </Typography>
+                <Typography
+                    variant="body2"
+                    color="primary"
+                    sx={{
+                        cursor: "pointer",
+                        fontSize: "0.9em",
+                        "&:hover": { textDecoration: "underline" },
+                    }}
+                    onClick={toggle}
+                >
+                    Sign Up
                 </Typography>
             </Box>
         </Box>

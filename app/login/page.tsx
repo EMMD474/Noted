@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { LoginForm } from "@/components/LoginForm";
 import { SignForm } from "@/components/SignForm";
 
@@ -17,19 +17,17 @@ export default function LoginPage() {
             sx={{
                 display: "flex",
                 width: "100%",
-                minHeight: "100vh",
+                height: "100vh",
                 alignItems: "center",
                 justifyContent: "center",
-                bgcolor: "#f5f5f5",
+                bgcolor: "whitesmoke",
             }}
         >
-            <Container maxWidth="sm">
-                {showLogin ? (
-                    <LoginForm toggle={toggleForm} />
-                ) : (
-                    <SignForm toggle={toggleForm} />
-                )}
-            </Container>
+            {showLogin ? (
+                <LoginForm toggle={toggleForm} />
+            ) : (
+                <SignForm toggle={toggleForm} />
+            )}
         </Box>
     );
 }
