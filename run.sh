@@ -1,6 +1,8 @@
 #!/bin/bash
-echo "Starting Server ..."
+
+echo "starting db ..."
 
 docker compose up -d
 
+echo "Starting Server ..."
 pnpm dev
