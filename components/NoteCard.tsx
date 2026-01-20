@@ -37,11 +37,11 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     const getImportanceColor = (imp: string) => {
         switch (imp.toLowerCase()) {
             case "urgent":
-                return "#FF6347"; // Tomato
+                return "#ef4444"; // Red 500
             case "important":
-                return "orange";
+                return "#f59e0b"; // Amber 500
             default:
-                return "teal";
+                return "#10b981"; // Emerald 500
         }
     };
 
@@ -60,38 +60,80 @@ export const NoteCard: React.FC<NoteCardProps> = ({
                     display: "flex",
                     flexDirection: "column",
                     borderRadius: 2,
-                    transition: "0.3s ease-in-out",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     "&:hover": {
                         cursor: "pointer",
-                        boxShadow: (theme) => theme.shadows[4],
+                        transform: "translateY(-4px)",
+                        boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+                        // borderColor: "primary.light",
                     },
                 }}
             >
                 <CardHeader
                     avatar={
-                        <Avatar sx={{ bgcolor: getImportanceColor(importance) }}>
+                        <Avatar
+                            sx={{
+                                bgcolor: "transparent",
+                                color: getImportanceColor(importance),
+                                border: `2px solid ${getImportanceColor(importance)}`,
+                                width: 32,
+                                height: 32,
+                                fontSize: "0.875rem",
+                                fontWeight: 700
+                            }}
+                        >
                             {importance.charAt(0).toUpperCase()}
                         </Avatar>
                     }
                     action={
-                        <IconButton onClick={() => setDeleteModalOpen(true)}>
-                            <Delete sx={{ color: red[400] }} />
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteModalOpen(true);
+                            }}
+                            size="small"
+                        >
+                            <Delete size="small" sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }} />
                         </IconButton>
                     }
-                    title={<Typography variant="subtitle1" fontWeight={600}>{title}</Typography>}
-                    subheader={formattedDate}
+                    title={<Typography variant="subtitle1" fontWeight={700} color="text.primary">{title}</Typography>}
+                    subheader={<Typography variant="caption" color="text.secondary">{formattedDate}</Typography>}
                 />
-                <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
+                <CardContent sx={{ flexGrow: 1, pt: 0 }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            lineHeight: 1.6
+                        }}
+                    >
                         {content}
                     </Typography>
                 </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton onClick={() => setFav(!fav)}>
-                        <Favorite sx={{ color: fav ? getImportanceColor(importance) : "inherit" }} />
+                <CardActions disableSpacing sx={{ px: 2, pb: 2 }}>
+                    <IconButton
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setFav(!fav);
+                        }}
+                        size="small"
+                    >
+                        <Favorite
+                            fontSize="small"
+                            sx={{
+                                color: fav ? "#f43f5e" : "text.secondary",
+                                transition: "0.2s"
+                            }}
+                        />
                     </IconButton>
-                    <IconButton aria-label="share">
-                        <Share />
+                    <IconButton disabled size="small">
+                        <Share fontSize="small" sx={{ color: "text.secondary" }} />
                     </IconButton>
                 </CardActions>
             </Card>

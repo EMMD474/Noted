@@ -44,7 +44,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     const router = useRouter();
     const pathname = usePathname();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -78,7 +78,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         { text: "Pending", icon: <Schedule color="primary" />, path: "/pending" },
     ];
 
-    const DRAWER_WIDTH = 240;
+    const DRAWER_WIDTH = 280;
 
     if (status === "loading") {
         return (
@@ -94,14 +94,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     }
 
     return (
-        <Box sx={{ display: "flex", minHeight: "100vh" }}>
+        <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
             <AppBar
                 position="fixed"
                 elevation={0}
                 sx={{
                     width: isMobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
                     ml: isMobile ? 0 : `${DRAWER_WIDTH}px`,
-                    bgcolor: "background.paper",
+                    bgcolor: "rgba(255, 255, 255, 0.8)",
+                    backdropFilter: "blur(12px)",
                     borderBottom: "1px solid",
                     borderColor: "divider",
                 }}
@@ -112,8 +113,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                             <MenuIcon color="primary" />
                         </IconButton>
                     )}
-                    <Typography variant="h6" color="primary" sx={{ fontWeight: 600 }}>
-                        {pathname === "/" ? "Dashboard" : pathname.substring(1).charAt(0).toUpperCase() + pathname.slice(2)}
+                    <Typography variant="h6" color="text.primary" sx={{ fontWeight: 700 }}>
+                        {pathname === "/" ? "Dashboard" : pathname.substring(1).split('/')[0].charAt(0).toUpperCase() + pathname.substring(1).split('/')[0].slice(1)}
                     </Typography>
 
                     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -132,11 +133,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     "& .MuiDrawer-paper": {
                         width: DRAWER_WIDTH,
                         boxSizing: "border-box",
+                        borderRight: "1px solid",
+                        borderColor: "divider",
+                        bgcolor: "rgba(255, 255, 255, 0.95)",
+                        backdropFilter: "blur(20px)",
                     },
                 }}
             >
-                <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
+                <Box sx={{ p: 3, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Typography variant="h5" color="primary" sx={{ fontWeight: 800, letterSpacing: "-0.02em" }}>
                         Noted
                     </Typography>
                     {isMobile && (
@@ -145,72 +150,97 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         </IconButton>
                     )}
                 </Box>
-                <Divider />
-                <List>
-                    {drawerItems.map((item) => (
-                        <ListItem
-                            key={item.text}
-                            disablePadding
-                        >
-                            <Box
-                                onClick={() => router.push(item.path)}
-                                sx={{
-                                    width: "100%",
-                                    cursor: "pointer",
-                                    bgcolor: pathname === item.path ? "action.selected" : "transparent",
-                                    "&:hover": { bgcolor: "action.hover" },
-                                    display: "flex",
-                                    alignItems: "center",
-                                    p: 1.5,
-                                    borderRadius: 1,
-                                    mx: 1,
-                                    my: 0.5,
-                                }}
+
+                <Box sx={{ px: 2, mb: 2 }}>
+                    <Typography variant="overline" color="text.secondary" sx={{ opacity: 0.6, fontWeight: 700, px: 1 }}>
+                        Home
+                    </Typography>
+                    <List sx={{ mt: 1 }}>
+                        {drawerItems.map((item) => (
+                            <ListItem
+                                key={item.text}
+                                disablePadding
+                                sx={{ mb: 0.5 }}
                             >
-                                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </Box>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider sx={{ my: 1 }} />
-                <List>
-                    {drawerItems2.map((item) => (
-                        <ListItem key={item.text} disablePadding>
-                            <Box
-                                onClick={() => router.push(item.path)}
-                                sx={{
-                                    width: "100%",
-                                    cursor: "pointer",
-                                    bgcolor: pathname === item.path ? "action.selected" : "transparent",
-                                    "&:hover": { bgcolor: "action.hover" },
-                                    display: "flex",
-                                    alignItems: "center",
-                                    p: 1.5,
-                                    borderRadius: 1,
-                                    mx: 1,
-                                    my: 0.5,
-                                }}
-                            >
-                                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </Box>
-                        </ListItem>
-                    ))}
-                </List>
+                                <Box
+                                    onClick={() => {
+                                        router.push(item.path);
+                                        if (isMobile) setDrawerOpen(false);
+                                    }}
+                                    sx={{
+                                        width: "100%",
+                                        cursor: "pointer",
+                                        bgcolor: pathname === item.path ? "rgba(26, 46, 53, 0.08)" : "transparent",
+                                        color: pathname === item.path ? "primary.main" : "text.secondary",
+                                        "&:hover": { bgcolor: "rgba(26, 46, 53, 0.04)" },
+                                        display: "flex",
+                                        alignItems: "center",
+                                        p: 1.25,
+                                        px: 2,
+                                        borderRadius: 2,
+                                        transition: "0.2s",
+                                    }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>{item.icon}</ListItemIcon>
+                                    <ListItemText
+                                        primary={item.text}
+                                        primaryTypographyProps={{ fontWeight: pathname === item.path ? 600 : 500 }}
+                                    />
+                                </Box>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+
+                <Box sx={{ px: 2 }}>
+                    <Typography variant="overline" color="text.secondary" sx={{ opacity: 0.6, fontWeight: 700, px: 1 }}>
+                        Categories
+                    </Typography>
+                    <List sx={{ mt: 1 }}>
+                        {drawerItems2.map((item) => (
+                            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                                <Box
+                                    onClick={() => {
+                                        router.push(item.path);
+                                        if (isMobile) setDrawerOpen(false);
+                                    }}
+                                    sx={{
+                                        width: "100%",
+                                        cursor: "pointer",
+                                        bgcolor: pathname === item.path ? "rgba(26, 46, 53, 0.08)" : "transparent",
+                                        color: pathname === item.path ? "primary.main" : "text.secondary",
+                                        "&:hover": { bgcolor: "rgba(26, 46, 53, 0.04)" },
+                                        display: "flex",
+                                        alignItems: "center",
+                                        p: 1.25,
+                                        px: 2,
+                                        borderRadius: 2,
+                                        transition: "0.2s",
+                                    }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 36, color: "inherit" }}>{item.icon}</ListItemIcon>
+                                    <ListItemText
+                                        primary={item.text}
+                                        primaryTypographyProps={{ fontWeight: pathname === item.path ? 600 : 500 }}
+                                    />
+                                </Box>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
             </Drawer>
 
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3,
+                    p: { xs: 2, sm: 3, md: 4 },
                     width: isMobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
                     bgcolor: "background.default",
                 }}
             >
                 <Toolbar />
-                <Container maxWidth="lg">
+                <Container maxWidth="xl" sx={{ mt: 2 }}>
                     {children}
                 </Container>
 
@@ -218,6 +248,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     ariaLabel="SpeedDial create"
                     sx={{ position: "fixed", bottom: 32, right: 32 }}
                     icon={<SpeedDialIcon />}
+                    FabProps={{
+                        sx: {
+                            bgcolor: "primary.main",
+                            "&:hover": { bgcolor: "primary.dark" },
+                            boxShadow: "0 8px 24px -6px rgba(0, 0, 0, 0.2)",
+                        }
+                    }}
                 >
                     {createList.map((action) => (
                         <SpeedDialAction
