@@ -4,77 +4,99 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Noted is a full-stack note-taking and task management application with a React frontend and Django REST API backend.
+Noted is a full-stack note-taking and task management application built with Next.js, Prisma, and PostgreSQL.
 
 ## Commands
 
-### Frontend (from `/frontend`)
 ```bash
-npm run dev      # Start Vite dev server on port 5173
-npm run build    # Production build
-npm run lint     # Run ESLint
-npm run preview  # Preview production build
+pnpm install         # Install dependencies (runs prisma generate automatically)
+pnpm dev             # Start Next.js dev server on port 3000
+pnpm build           # Production build
+pnpm start           # Start production server
+pnpm lint            # Run ESLint
 ```
 
-### Backend (from `/backend`)
+### Database
+
 ```bash
-python manage.py runserver    # Start Django dev server on port 8000
-python manage.py migrate      # Apply database migrations
-python manage.py makemigrations api  # Create new migrations after model changes
+docker compose up -d                    # Start PostgreSQL container
+npx prisma migrate dev                  # Apply migrations during development
+npx prisma migrate deploy               # Apply migrations in production
+npx prisma generate                     # Regenerate Prisma client after schema changes
 ```
 
-### Running Both Servers
-Frontend and backend must run simultaneously during development. Frontend runs on `localhost:5173`, backend on `localhost:8000`.
+### Quick Start
+
+Run `./run.sh` to start both Docker (PostgreSQL) and the Next.js dev server.
 
 ## Architecture
 
 ### Stack
-- **Frontend**: React 18 + Vite + Material-UI (MUI)
-- **Backend**: Django 5.1 + Django REST Framework + Simple JWT
-- **Database**: PostgreSQL (database name: `noted`)
+- **Framework**: Next.js 16 (App Router) with TypeScript
+- **Database**: PostgreSQL 16 (via Docker Compose)
+- **ORM**: Prisma 7.2
+- **Authentication**: NextAuth with JWT/Credentials provider
+- **UI**: Material-UI (MUI) 7
 
 ### Directory Structure
 ```
-frontend/src/
-├── Pages/           # Route-level components (Notes, Todo, Login, SignUp, Calendar)
-├── Components/      # Reusable components
-│   ├── AuthProvider.jsx    # Auth context (isLogged, token, refreshToken)
-│   └── NotesProvider.jsx   # Notes context (notesUpdated, notes, getNotes)
-└── App.jsx          # React Router configuration
+app/
+├── (main)/              # Authenticated routes (notes, todo, calendar)
+├── api/                 # API route handlers
+│   ├── auth/[...nextauth]/  # NextAuth endpoints
+│   ├── notes/[id]/      # Single note CRUD
+│   ├── notes/           # Notes list/create
+│   ├── todos/[id]/      # Single todo CRUD
+│   ├── todos/           # Todos list/create
+│   └── users/           # User registration
+├── login/               # Login/signup page
+├── layout.tsx           # Root layout
+└── providers.tsx        # Client providers wrapper
 
-backend/
-├── api/             # Main Django app (models, views, serializers)
-└── backend/         # Django project settings
+components/              # Reusable React components
+contexts/                # React Context (NotesProvider)
+lib/                     # Utilities (auth config, Prisma client, theme)
+prisma/                  # Schema and migrations
 ```
 
-### State Management
-Frontend uses React Context API with two providers:
-- `AuthProvider` - JWT token management, login state
-- `NotesProvider` - Notes data and refresh functions
-
-Access via hooks: `useAuth()`, `useNotes()`
-
 ### Authentication Flow
-1. JWT tokens obtained from `/api/token/` endpoint
-2. Tokens stored in `sessionStorage` (`authToken`, `refresh`)
-3. Access token included in `Authorization: Bearer {token}` header
-4. Token refresh runs automatically every 5 minutes
+1. User authenticates via NextAuth credentials provider (`/api/auth/[...nextauth]`)
+2. Password verified against bcrypt hash in database
+3. JWT session created and managed by NextAuth
+4. Protected API routes use `getServerSession(authOptions)` to verify user
+5. All data endpoints verify user ownership before operations
+
+### State Management
+- **NotesProvider** (`contexts/NotesContext.tsx`): Manages notes state synchronization
+- Access via `useNotes()` hook for `getNotes()`, `setNotes()`, `notesUpdated`
+
+### Provider Hierarchy (app/providers.tsx)
+```
+SessionProvider (NextAuth)
+  → ThemeProvider (MUI)
+    → NotesProvider
+```
+
+### Data Models (prisma/schema.prisma)
+
+**User** → `auth_user` table
+- id, username (unique), email (unique), password (bcrypt), createdAt
+
+**Note** → `api_note` table
+- id, title, content, importance (normal/important/urgent), createdAt, userId
+
+**Todo** → `api_todo` table
+- id, title, importance, checked (boolean), createdAt, userId
 
 ### API Endpoints
-- `POST /api/token/` - Login (returns access + refresh tokens with username/email)
-- `POST /api/token/refresh/` - Refresh access token
-- `/users/` - User CRUD (signup via POST)
-- `/notes/` - Notes CRUD (filtered by authenticated user)
-- `/todos/` - Todos CRUD (filtered by authenticated user)
 
-### Data Models
-**Note**: title, content, importance (normal/important/urgent), created_at, user (FK)
-**Todo**: title, importance, checked (boolean), created_at, user (FK)
+All data endpoints require authentication and filter by logged-in user.
 
-## Backend Dependencies
-Django packages required (install via pip):
-- django
-- djangorestframework
-- djangorestframework-simplejwt
-- django-cors-headers
-- psycopg2-binary (for PostgreSQL)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/users` | User registration |
+| * | `/api/auth/[...nextauth]` | NextAuth handlers |
+| GET/POST | `/api/notes` | List/create notes |
+| GET/PUT/DELETE | `/api/notes/[id]` | Single note operations |
+| GET/POST | `/api/todos` | List/create todos |
+| GET/PUT/DELETE | `/api/todos/[id]` | Single todo operations |
