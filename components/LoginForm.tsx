@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import {
     Box,
     Button,
-    Divider,
     TextField,
     Typography,
     IconButton,
     InputAdornment,
+    Alert,
+    useTheme,
 } from "@mui/material";
 import { AccountCircle, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import { signIn } from "next-auth/react";
@@ -20,6 +21,7 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
     const router = useRouter();
+    const theme = useTheme();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -60,31 +62,60 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
-                width: 350,
-                p: 4,
-                bgcolor: "#fff",
-                borderRadius: "0.5em",
-                boxShadow: "0.3em 0.3em 0.5em rgba(0, 0, 0, 0.1)",
+                width: "100%",
+                maxWidth: 420,
+                p: { xs: 3, sm: 5 },
+                bgcolor: theme.palette.background.paper,
+                borderRadius: 3,
+                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
             }}
         >
-            <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
-                Login
+            {/* Mobile branding */}
+            <Typography
+                variant="h4"
+                sx={{
+                    display: { xs: "block", md: "none" },
+                    fontWeight: 700,
+                    color: theme.palette.primary.main,
+                    mb: 1,
+                    textAlign: "center",
+                }}
+            >
+                Noted
             </Typography>
-            <Divider sx={{ width: "80%", mb: 2 }} />
 
-            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <Typography
+                variant="h5"
+                sx={{
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
+                    mb: 0.5,
+                }}
+            >
+                Welcome back
+            </Typography>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: theme.palette.text.secondary,
+                    mb: 4,
+                }}
+            >
+                Sign in to continue to your account
+            </Typography>
+
+            <form onSubmit={handleSubmit}>
                 <TextField
                     fullWidth
                     label="Username"
                     variant="outlined"
-                    margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    sx={{ mb: 2.5 }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AccountCircle color="primary" />
+                                <AccountCircle sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
                     }}
@@ -95,18 +126,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
                     label="Password"
                     type={showPassword ? "text" : "password"}
                     variant="outlined"
-                    margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    sx={{ mb: 1 }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <Lock color="primary" />
+                                <Lock sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                <IconButton
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                    size="small"
+                                >
                                     {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
@@ -114,10 +149,24 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
                     }}
                 />
 
-                {error && (
-                    <Typography color="error" variant="body2" sx={{ mt: 1, textAlign: "center" }}>
-                        {error}
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: theme.palette.secondary.main,
+                            cursor: "pointer",
+                            fontWeight: 500,
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                    >
+                        Forgot password?
                     </Typography>
+                </Box>
+
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Alert>
                 )}
 
                 <Button
@@ -125,37 +174,33 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
                     type="submit"
                     variant="contained"
                     disabled={loading}
-                    sx={{ mt: 2, py: 1 }}
+                    size="large"
+                    sx={{
+                        py: 1.5,
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        mb: 3,
+                    }}
                 >
-                    {loading ? "Logging in..." : "Login"}
+                    {loading ? "Signing in..." : "Sign In"}
                 </Button>
             </form>
 
-            <Divider sx={{ width: "80%", mt: 2, mb: 1 }} />
-
-            <Box sx={{ width: "80%", display: "flex", justifyContent: "space-between", pb: 1 }}>
-                <Typography
-                    variant="body2"
-                    color="primary"
-                    sx={{
-                        cursor: "pointer",
-                        fontSize: "0.9em",
-                        "&:hover": { textDecoration: "underline" },
-                    }}
-                >
-                    Forgot Password
-                </Typography>
-                <Typography
-                    variant="body2"
-                    color="primary"
-                    sx={{
-                        cursor: "pointer",
-                        fontSize: "0.9em",
-                        "&:hover": { textDecoration: "underline" },
-                    }}
-                    onClick={toggle}
-                >
-                    Sign Up
+            <Box sx={{ textAlign: "center" }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    {"Don't have an account? "}
+                    <Typography
+                        component="span"
+                        sx={{
+                            color: theme.palette.secondary.main,
+                            cursor: "pointer",
+                            fontWeight: 600,
+                            "&:hover": { textDecoration: "underline" },
+                        }}
+                        onClick={toggle}
+                    >
+                        Create one
+                    </Typography>
                 </Typography>
             </Box>
         </Box>

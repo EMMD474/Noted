@@ -4,22 +4,22 @@ import React, { useState } from "react";
 import {
     Box,
     Button,
-    Divider,
     TextField,
     Typography,
     IconButton,
     InputAdornment,
+    Alert,
+    useTheme,
 } from "@mui/material";
 import { AccountCircle, Lock, Mail, Visibility, VisibilityOff } from "@mui/icons-material";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 interface SignFormProps {
     toggle: () => void;
 }
 
 export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
-    const router = useRouter();
+    const theme = useTheme();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -55,7 +55,6 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
             const data = await res.json();
 
             if (res.ok) {
-                // Auto sign in after registration
                 await signIn("credentials", {
                     username,
                     password,
@@ -76,33 +75,62 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
-                width: 350,
-                p: 4,
-                bgcolor: "#fff",
-                borderRadius: "0.5em",
-                boxShadow: "0.3em 0.3em 0.5em rgba(0, 0, 0, 0.1)",
+                width: "100%",
+                maxWidth: 420,
+                p: { xs: 3, sm: 5 },
+                bgcolor: theme.palette.background.paper,
+                borderRadius: 3,
+                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
             }}
         >
-            <Typography variant="h6" color="primary" sx={{ fontWeight: 600, mb: 1 }}>
-                Sign Up
+            {/* Mobile branding */}
+            <Typography
+                variant="h4"
+                sx={{
+                    display: { xs: "block", md: "none" },
+                    fontWeight: 700,
+                    color: theme.palette.primary.main,
+                    mb: 1,
+                    textAlign: "center",
+                }}
+            >
+                Noted
             </Typography>
-            <Divider sx={{ width: "80%", mb: 2 }} />
 
-            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+            <Typography
+                variant="h5"
+                sx={{
+                    fontWeight: 700,
+                    color: theme.palette.text.primary,
+                    mb: 0.5,
+                }}
+            >
+                Create an account
+            </Typography>
+            <Typography
+                variant="body2"
+                sx={{
+                    color: theme.palette.text.secondary,
+                    mb: 3,
+                }}
+            >
+                Get started with your free account
+            </Typography>
+
+            <form onSubmit={handleSubmit}>
                 <TextField
                     fullWidth
                     label="Username"
                     variant="outlined"
-                    margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     error={!!errors.username}
                     helperText={errors.username}
+                    sx={{ mb: 2 }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AccountCircle color="primary" />
+                                <AccountCircle sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
                     }}
@@ -113,15 +141,15 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                     label="Email"
                     type="email"
                     variant="outlined"
-                    margin="normal"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     error={!!errors.email}
                     helperText={errors.email}
+                    sx={{ mb: 2 }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <Mail color="primary" />
+                                <Mail sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
                     }}
@@ -132,15 +160,15 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                     label="Password"
                     type={showPassword ? "text" : "password"}
                     variant="outlined"
-                    margin="normal"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     error={!!errors.password}
                     helperText={errors.password}
+                    sx={{ mb: 2 }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <Lock color="primary" />
+                                <Lock sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
                     }}
@@ -151,20 +179,24 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                     label="Confirm Password"
                     type={showPassword ? "text" : "password"}
                     variant="outlined"
-                    margin="normal"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     error={!!errors.confirmPassword}
                     helperText={errors.confirmPassword}
+                    sx={{ mb: 2 }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <Lock color="primary" />
+                                <Lock sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                <IconButton
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                    size="small"
+                                >
                                     {showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
@@ -173,9 +205,9 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                 />
 
                 {errors.form && (
-                    <Typography color="error" variant="body2" sx={{ mt: 1, textAlign: "center" }}>
+                    <Alert severity="error" sx={{ mb: 2 }}>
                         {errors.form}
-                    </Typography>
+                    </Alert>
                 )}
 
                 <Button
@@ -183,28 +215,32 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                     type="submit"
                     variant="contained"
                     disabled={loading}
-                    sx={{ mt: 2, py: 1 }}
+                    size="large"
+                    sx={{
+                        py: 1.5,
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        mb: 3,
+                    }}
                 >
-                    {loading ? "Creating account..." : "Sign Up"}
+                    {loading ? "Creating account..." : "Create Account"}
                 </Button>
             </form>
 
-            <Divider sx={{ width: "80%", mt: 2, mb: 1 }} />
-
-            <Box sx={{ width: "80%", display: "flex", justifyContent: "center", pb: 1 }}>
-                <Typography variant="body2" sx={{ fontSize: "0.9em" }}>
+            <Box sx={{ textAlign: "center" }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                     Already have an account?{" "}
                     <Typography
                         component="span"
-                        color="primary"
                         sx={{
+                            color: theme.palette.secondary.main,
                             cursor: "pointer",
-                            fontSize: "0.9em",
+                            fontWeight: 600,
                             "&:hover": { textDecoration: "underline" },
                         }}
                         onClick={toggle}
                     >
-                        Login
+                        Sign in
                     </Typography>
                 </Typography>
             </Box>
