@@ -11,10 +11,11 @@ import {
     RadioGroup,
     FormControl,
     FormControlLabel,
-    FormLabel,
     Radio,
+    Stack,
+    alpha,
 } from "@mui/material";
-import { Close, Create } from "@mui/icons-material";
+import { Close, Add, SubjectOutlined, FormatListBulleted, NotificationsActive } from "@mui/icons-material";
 import { useNotes } from "@/contexts/NotesProvider";
 
 const modalStyles = {
@@ -22,11 +23,12 @@ const modalStyles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: { xs: 300, sm: 400 },
+    width: { xs: "90%", sm: 450 },
+    maxWidth: 450,
     bgcolor: "background.paper",
-    borderRadius: 2,
-    boxShadow: 24,
-    p: 4,
+    borderRadius: 3,
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    overflow: "hidden",
 };
 
 interface CreateNoteProps {
@@ -102,73 +104,166 @@ export const CreateNote: React.FC<CreateNoteProps> = ({
         }
     };
 
+    const getCategoryIcon = () => {
+        switch (category) {
+            case "todo":
+                return <FormatListBulleted sx={{ fontSize: 20 }} />;
+            case "reminder":
+                return <NotificationsActive sx={{ fontSize: 20 }} />;
+            default:
+                return <SubjectOutlined sx={{ fontSize: 20 }} />;
+        }
+    };
+
     const capital = category.charAt(0).toUpperCase() + category.slice(1);
+
+    const importanceOptions = [
+        { value: "normal", label: "Normal", color: "#10b981" },
+        { value: "important", label: "Important", color: "#f59e0b" },
+        { value: "urgent", label: "Urgent", color: "#ef4444" },
+    ];
 
     return (
         <Modal open={open} onClose={closeModal}>
             <Box sx={modalStyles}>
-                <IconButton
-                    onClick={closeModal}
-                    sx={{ position: "absolute", top: 8, right: 8 }}
+                {/* Header */}
+                <Box
+                    sx={{
+                        p: 3,
+                        pb: 2,
+                        background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                        color: "white",
+                    }}
                 >
-                    <Close color="primary" />
-                </IconButton>
+                    <IconButton
+                        onClick={closeModal}
+                        sx={{
+                            position: "absolute",
+                            top: 12,
+                            right: 12,
+                            color: "white",
+                            "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                        }}
+                    >
+                        <Close />
+                    </IconButton>
 
-                <Typography variant="h6" color="primary" gutterBottom sx={{ fontWeight: 600 }}>
-                    Create {capital}
-                </Typography>
+                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: 40,
+                                height: 40,
+                                borderRadius: 2,
+                                bgcolor: "rgba(255,255,255,0.15)",
+                            }}
+                        >
+                            {getCategoryIcon()}
+                        </Box>
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            Create {capital}
+                        </Typography>
+                    </Stack>
+                </Box>
 
-                <form onSubmit={handleCreate}>
-                    <TextField
-                        fullWidth
-                        label={category === "todo" ? "Todo" : "Title"}
-                        variant="outlined"
-                        margin="normal"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        error={!!errors.title}
-                        helperText={errors.title}
-                    />
-
-                    {category !== "todo" && (
+                {/* Form */}
+                <Box sx={{ p: 3 }}>
+                    <form onSubmit={handleCreate}>
                         <TextField
                             fullWidth
-                            label="Details"
+                            label={category === "todo" ? "Task name" : "Title"}
                             variant="outlined"
-                            margin="normal"
-                            multiline
-                            rows={4}
-                            value={details}
-                            onChange={(e) => setDetails(e.target.value)}
-                            error={!!errors.details}
-                            helperText={errors.details}
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            error={!!errors.title}
+                            helperText={errors.title}
+                            sx={{ mb: 2 }}
                         />
-                    )}
 
-                    <FormControl component="fieldset" sx={{ mt: 2, mb: 3 }}>
-                        <FormLabel component="legend">Importance</FormLabel>
-                        <RadioGroup
-                            row
-                            value={importance}
-                            onChange={(e) => setImportance(e.target.value)}
+                        {category !== "todo" && (
+                            <TextField
+                                fullWidth
+                                label="Details"
+                                variant="outlined"
+                                multiline
+                                rows={4}
+                                value={details}
+                                onChange={(e) => setDetails(e.target.value)}
+                                error={!!errors.details}
+                                helperText={errors.details}
+                                sx={{ mb: 2 }}
+                            />
+                        )}
+
+                        <FormControl component="fieldset" sx={{ width: "100%", mb: 3 }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
+                                Priority Level
+                            </Typography>
+                            <RadioGroup
+                                row
+                                value={importance}
+                                onChange={(e) => setImportance(e.target.value)}
+                                sx={{ gap: 1 }}
+                            >
+                                {importanceOptions.map((option) => (
+                                    <FormControlLabel
+                                        key={option.value}
+                                        value={option.value}
+                                        control={
+                                            <Radio
+                                                sx={{
+                                                    color: option.color,
+                                                    "&.Mui-checked": { color: option.color },
+                                                }}
+                                            />
+                                        }
+                                        label={
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontWeight: importance === option.value ? 600 : 400,
+                                                    color: importance === option.value ? option.color : "text.secondary",
+                                                }}
+                                            >
+                                                {option.label}
+                                            </Typography>
+                                        }
+                                        sx={{
+                                            flex: 1,
+                                            m: 0,
+                                            p: 1,
+                                            borderRadius: 2,
+                                            border: "1px solid",
+                                            borderColor: importance === option.value ? option.color : "divider",
+                                            bgcolor: importance === option.value ? alpha(option.color, 0.05) : "transparent",
+                                            transition: "all 0.2s",
+                                        }}
+                                    />
+                                ))}
+                            </RadioGroup>
+                        </FormControl>
+
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            disabled={loading}
+                            startIcon={<Add />}
+                            sx={{
+                                py: 1.5,
+                                fontWeight: 600,
+                                boxShadow: "0 4px 14px -4px rgba(26, 46, 53, 0.4)",
+                                "&:hover": {
+                                    boxShadow: "0 6px 20px -4px rgba(26, 46, 53, 0.5)",
+                                },
+                            }}
                         >
-                            <FormControlLabel value="normal" control={<Radio />} label="Normal" />
-                            <FormControlLabel value="important" control={<Radio />} label="Important" />
-                            <FormControlLabel value="urgent" control={<Radio />} label="Urgent" />
-                        </RadioGroup>
-                    </FormControl>
-
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        disabled={loading}
-                        endIcon={<Create />}
-                        sx={{ py: 1.5, fontWeight: 600 }}
-                    >
-                        {loading ? "Creating..." : `Create ${capital}`}
-                    </Button>
-                </form>
+                            {loading ? "Creating..." : `Create ${capital}`}
+                        </Button>
+                    </form>
+                </Box>
             </Box>
         </Modal>
     );

@@ -7,11 +7,11 @@ import {
     Checkbox,
     IconButton,
     Stack,
-    useMediaQuery,
     useTheme,
+    alpha,
+    Tooltip,
 } from "@mui/material";
-import { Delete } from "@mui/icons-material";
-import { red, teal } from "@mui/material/colors";
+import { Delete, AccessTime } from "@mui/icons-material";
 import { useNotes } from "@/contexts/NotesProvider";
 
 interface TodoItemProps {
@@ -30,7 +30,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     importance,
 }) => {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [isChecked, setIsChecked] = useState(checked);
     const [isDeleting, setIsDeleting] = useState(false);
     const { setNotesUpdated } = useNotes();
@@ -81,6 +80,31 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         day: "numeric",
     });
 
+    const getImportanceStyles = (imp: string) => {
+        switch (imp.toLowerCase()) {
+            case "urgent":
+                return {
+                    bgcolor: alpha("#ef4444", 0.1),
+                    color: "#ef4444",
+                    borderColor: alpha("#ef4444", 0.3),
+                };
+            case "important":
+                return {
+                    bgcolor: alpha("#f59e0b", 0.1),
+                    color: "#d97706",
+                    borderColor: alpha("#f59e0b", 0.3),
+                };
+            default:
+                return {
+                    bgcolor: alpha("#10b981", 0.1),
+                    color: "#059669",
+                    borderColor: alpha("#10b981", 0.3),
+                };
+        }
+    };
+
+    const importanceStyles = getImportanceStyles(importance);
+
     return (
         <Box
             sx={{
@@ -88,29 +112,43 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 alignItems: "center",
                 justifyContent: "space-between",
                 width: "100%",
-                maxWidth: 600,
-                bgcolor: isChecked ? "action.hover" : "background.paper",
+                bgcolor: isChecked ? alpha(theme.palette.primary.main, 0.02) : "background.paper",
                 borderRadius: 2,
-                mt: 1,
-                mb: 1,
-                p: 1,
+                mb: 1.5,
+                p: 2,
                 border: "1px solid",
-                borderColor: isChecked ? "teal.100" : "divider",
-                transition: "0.2s",
+                borderColor: isChecked ? alpha(theme.palette.primary.main, 0.15) : "divider",
+                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                 "&:hover": {
-                    boxShadow: theme.shadows[1],
+                    borderColor: isChecked ? alpha(theme.palette.primary.main, 0.25) : "primary.light",
+                    boxShadow: "0 4px 12px -2px rgba(0, 0, 0, 0.08)",
+                    transform: "translateY(-1px)",
                 },
             }}
         >
             <Stack sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
                 <Stack sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Checkbox checked={isChecked} onChange={handleToggle} color="primary" />
+                    <Checkbox
+                        checked={isChecked}
+                        onChange={handleToggle}
+                        sx={{
+                            color: theme.palette.divider,
+                            "&.Mui-checked": {
+                                color: "primary.main",
+                            },
+                            "& .MuiSvgIcon-root": {
+                                fontSize: 24,
+                            },
+                        }}
+                    />
                     <Typography
                         variant="body1"
                         sx={{
+                            flex: 1,
                             textDecoration: isChecked ? "line-through" : "none",
                             color: isChecked ? "text.secondary" : "text.primary",
                             fontWeight: 500,
+                            transition: "all 0.2s",
                         }}
                     >
                         {title}
@@ -118,44 +156,44 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     <Box
                         sx={{
                             ml: 2,
-                            px: 1,
-                            py: 0.25,
-                            borderRadius: 1,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 1.5,
                             fontSize: "0.7rem",
-                            bgcolor:
-                                importance === "urgent"
-                                    ? red[50]
-                                    : importance === "important"
-                                        ? "orange"
-                                        : "teal",
-                            color:
-                                importance === "urgent"
-                                    ? red[700]
-                                    : importance === "important"
-                                        ? "white"
-                                        : "white",
+                            border: "1px solid",
+                            ...importanceStyles,
                             textTransform: "uppercase",
                             fontWeight: 700,
+                            letterSpacing: "0.02em",
                         }}
                     >
                         {importance}
                     </Box>
                 </Stack>
-                <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ ml: 6 }}
-                >
-                    {formattedDate}
-                </Typography>
+                <Stack direction="row" alignItems="center" sx={{ ml: 5.5, mt: 0.5 }}>
+                    <AccessTime sx={{ fontSize: 14, color: "text.secondary", mr: 0.5 }} />
+                    <Typography variant="caption" color="text.secondary">
+                        {formattedDate}
+                    </Typography>
+                </Stack>
             </Stack>
-            <IconButton
-                onClick={handleDelete}
-                disabled={isDeleting}
-                size="small"
-            >
-                <Delete sx={{ color: isChecked || isDeleting ? red[400] : "action.disabled" }} />
-            </IconButton>
+            <Tooltip title="Delete task">
+                <IconButton
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    size="small"
+                    sx={{
+                        ml: 1,
+                        color: "text.secondary",
+                        "&:hover": {
+                            color: "error.main",
+                            bgcolor: alpha("#ef4444", 0.1),
+                        },
+                    }}
+                >
+                    <Delete fontSize="small" />
+                </IconButton>
+            </Tooltip>
         </Box>
     );
 };

@@ -6,12 +6,13 @@ import {
     CardHeader,
     CardActions,
     IconButton,
-    Avatar,
+    Box,
     CardContent,
     Typography,
+    Tooltip,
+    alpha,
 } from "@mui/material";
-import { Delete, Favorite, Share } from "@mui/icons-material";
-import { red } from "@mui/material/colors";
+import { Delete, Favorite, Share, AccessTime } from "@mui/icons-material";
 import { DeleteModal } from "./DeleteModal";
 import { NoteDetailModal } from "./NoteDetailModal";
 
@@ -34,16 +35,30 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-    const getImportanceColor = (imp: string) => {
+    const getImportanceStyles = (imp: string) => {
         switch (imp.toLowerCase()) {
             case "urgent":
-                return "#ef4444"; // Red 500
+                return {
+                    bgcolor: alpha("#ef4444", 0.1),
+                    color: "#ef4444",
+                    borderColor: "#ef4444",
+                };
             case "important":
-                return "#f59e0b"; // Amber 500
+                return {
+                    bgcolor: alpha("#f59e0b", 0.1),
+                    color: "#d97706",
+                    borderColor: "#f59e0b",
+                };
             default:
-                return "#10b981"; // Emerald 500
+                return {
+                    bgcolor: alpha("#10b981", 0.1),
+                    color: "#059669",
+                    borderColor: "#10b981",
+                };
         }
     };
+
+    const importanceStyles = getImportanceStyles(importance);
 
     const formattedDate = new Date(createdAt).toLocaleDateString([], {
         year: "numeric",
@@ -59,49 +74,82 @@ export const NoteCard: React.FC<NoteCardProps> = ({
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: 2,
+                    borderRadius: 3,
                     border: "1px solid",
                     borderColor: "divider",
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    cursor: "pointer",
                     "&:hover": {
-                        cursor: "pointer",
                         transform: "translateY(-4px)",
-                        boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
-                        // borderColor: "primary.light",
+                        boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.12)",
+                        borderColor: "primary.light",
                     },
                 }}
             >
                 <CardHeader
                     avatar={
-                        <Avatar
+                        <Box
                             sx={{
-                                bgcolor: "transparent",
-                                color: getImportanceColor(importance),
-                                border: `2px solid ${getImportanceColor(importance)}`,
-                                width: 32,
-                                height: 32,
-                                fontSize: "0.875rem",
-                                fontWeight: 700
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: 36,
+                                height: 36,
+                                borderRadius: 1.5,
+                                fontSize: "0.8rem",
+                                fontWeight: 700,
+                                border: "2px solid",
+                                ...importanceStyles,
                             }}
                         >
                             {importance.charAt(0).toUpperCase()}
-                        </Avatar>
+                        </Box>
                     }
                     action={
-                        <IconButton
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setDeleteModalOpen(true);
-                            }}
-                            size="small"
-                        >
-                            <Delete size="small" sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }} />
-                        </IconButton>
+                        <Tooltip title="Delete note">
+                            <IconButton
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeleteModalOpen(true);
+                                }}
+                                size="small"
+                                sx={{
+                                    color: "text.secondary",
+                                    "&:hover": {
+                                        color: "error.main",
+                                        bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
+                                    },
+                                }}
+                            >
+                                <Delete fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
                     }
-                    title={<Typography variant="subtitle1" fontWeight={700} color="text.primary">{title}</Typography>}
-                    subheader={<Typography variant="caption" color="text.secondary">{formattedDate}</Typography>}
+                    title={
+                        <Typography
+                            variant="subtitle1"
+                            fontWeight={600}
+                            color="text.primary"
+                            sx={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                            }}
+                        >
+                            {title}
+                        </Typography>
+                    }
+                    subheader={
+                        <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
+                            <AccessTime sx={{ fontSize: 14, color: "text.secondary", mr: 0.5 }} />
+                            <Typography variant="caption" color="text.secondary">
+                                {formattedDate}
+                            </Typography>
+                        </Box>
+                    }
+                    sx={{ pb: 1 }}
                 />
-                <CardContent sx={{ flexGrow: 1, pt: 0 }}>
+                <CardContent sx={{ flexGrow: 1, pt: 0, pb: 1 }}>
                     <Typography
                         variant="body2"
                         color="text.secondary"
@@ -110,31 +158,48 @@ export const NoteCard: React.FC<NoteCardProps> = ({
                             WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
-                            lineHeight: 1.6
+                            lineHeight: 1.7,
                         }}
                     >
                         {content}
                     </Typography>
                 </CardContent>
-                <CardActions disableSpacing sx={{ px: 2, pb: 2 }}>
-                    <IconButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setFav(!fav);
-                        }}
-                        size="small"
-                    >
-                        <Favorite
-                            fontSize="small"
+                <CardActions disableSpacing sx={{ px: 2, pb: 2, pt: 1, borderTop: "1px solid", borderColor: "divider" }}>
+                    <Tooltip title={fav ? "Remove from favorites" : "Add to favorites"}>
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setFav(!fav);
+                            }}
+                            size="small"
                             sx={{
                                 color: fav ? "#f43f5e" : "text.secondary",
-                                transition: "0.2s"
+                                transition: "all 0.2s",
+                                "&:hover": {
+                                    bgcolor: alpha("#f43f5e", 0.1),
+                                    color: "#f43f5e",
+                                },
                             }}
-                        />
-                    </IconButton>
-                    <IconButton disabled size="small">
-                        <Share fontSize="small" sx={{ color: "text.secondary" }} />
-                    </IconButton>
+                        >
+                            <Favorite fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Share note">
+                        <span>
+                            <IconButton
+                                disabled
+                                size="small"
+                                sx={{
+                                    color: "text.secondary",
+                                    "&:hover": {
+                                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                                    },
+                                }}
+                            >
+                                <Share fontSize="small" />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
                 </CardActions>
             </Card>
 
