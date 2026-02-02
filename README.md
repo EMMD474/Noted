@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Noted
+
+Noted is an **all-in-one platform** for managing your **notes**, **todos**, and **reminders**. It bundles a modern Next.js frontend with backend APIs and can run a local PostgreSQL database via Docker (`noted-postgres`) for development.
+
+## Features
+
+- Create, edit, and organize notes
+- Manage todos with completion tracking
+- Set reminders for important tasks
+- Authentication and user accounts
+- Local development with Docker and Postgres
 
 ## Getting Started
 
