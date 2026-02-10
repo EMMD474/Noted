@@ -7,7 +7,6 @@ const prismaClientSingleton = () => {
     const adapter = new PrismaPg(pool);
     return new PrismaClient({
         adapter,
-        log: ["query"],
     });
 };
 
