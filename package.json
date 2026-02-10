@@ -26,6 +26,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@prisma/config": "^7.3.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/next-auth": "^3.15.0",
     "@types/node": "^20",

@@ -1,8 +1,7 @@
 import { defineConfig } from '@prisma/config'
 
 export default defineConfig({
-    earlyAccess: true,
     datasource: {
-        url: process.env.DATABASE_URL,
+        url: process.env.DATABASE_URL || 'postgresql://postgres:ep543@localhost:5432/noted',
     },
 })

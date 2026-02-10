@@ -2,5 +2,4 @@
 
 echo "stopping db ..."
 
-docker stop noted-postgres
-
+docker compose down
