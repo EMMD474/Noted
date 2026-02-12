@@ -9,4 +9,7 @@ export default defineConfig({
         // Use DIRECT_URL for migrations (bypasses pooler), fallback to DATABASE_URL for runtime
         url: process.env.DIRECT_URL || process.env.DATABASE_URL,
     },
+    migrations: {
+        seed: './node_modules/.bin/tsx prisma/seed.ts',
+    },
 })
