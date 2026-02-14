@@ -13,8 +13,8 @@ export async function GET() {
     }
 
     try {
-        const pendingTodos = await prisma.todo.findMany({
-            where: { userId: parseInt((session.user as any).id), checked: false },
+        const pendingTodos = await prisma.note.findMany({
+            where: { userId: parseInt((session.user as any).id), importance: "urgent" },
             orderBy: { createdAt: "desc" },
         });
 
