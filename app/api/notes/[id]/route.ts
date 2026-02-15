@@ -55,9 +55,7 @@ export async function PUT(
             where: { id: parseInt(id) },
         });
 
-        console.log("Found Note for Update:", note);
         const currentUserId = parseInt((session.user as any).id);
-        console.log("Session User ID:", currentUserId);
 
         if (!note || note.userId !== currentUserId) {
             console.warn("Update Error: Note not found or user mismatch", {
