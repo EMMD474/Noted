@@ -15,6 +15,7 @@ import {
 import { Delete, Favorite, Share, AccessTime } from "@mui/icons-material";
 import { DeleteModal } from "./DeleteModal";
 import { NoteDetailModal } from "./NoteDetailModal";
+import { useNotes } from "@/contexts/NotesProvider";
 
 interface NoteCardProps {
     id: number;
@@ -63,6 +64,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     };
 
     const getImportanceStyles = (imp: string) => {
+        if (!imp) return { bgcolor: "transparent", color: "inherit", borderColor: "divider" };
         switch (imp.toLowerCase()) {
             case "urgent":
                 return {
