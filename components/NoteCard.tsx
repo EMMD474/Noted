@@ -39,6 +39,11 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
 
+    // Keep internal state in sync with props
+    React.useEffect(() => {
+        setFav(favourite);
+    }, [favourite]);
+
     const handleFavouriteToggle = async (e: React.MouseEvent) => {
         e.stopPropagation();
         const newFav = !fav;

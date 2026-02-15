@@ -49,12 +49,22 @@ export async function PUT(
 
     try {
         const { title, content, importance, favourite } = await request.json();
+        console.log("PUT Note Request Body:", { title, content, importance, favourite });
 
         const note = await prisma.note.findUnique({
             where: { id: parseInt(id) },
         });
 
-        if (!note || note.userId !== parseInt((session.user as any).id)) {
+        console.log("Found Note for Update:", note);
+        const currentUserId = parseInt((session.user as any).id);
+        console.log("Session User ID:", currentUserId);
+
+        if (!note || note.userId !== currentUserId) {
+            console.warn("Update Error: Note not found or user mismatch", {
+                noteId: id,
+                noteUserId: note?.userId,
+                currentUserId
+            });
             return NextResponse.json({ message: "Note not found" }, { status: 404 });
         }
 
@@ -68,8 +78,10 @@ export async function PUT(
             },
         });
 
+        console.log("Updated Note Result:", updatedNote);
         return NextResponse.json(updatedNote);
     } catch (error) {
+        console.error("PUT Note update error:", error);
         return NextResponse.json(
             { message: "Internal server error" },
             { status: 500 }
