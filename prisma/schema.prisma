@@ -26,6 +26,7 @@ model Note {
   title      String
   content    String
   importance String
+  favourite  Boolean  @default(false)
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @map("updated_at")
   user       User     @relation(fields: [userId], references: [id])

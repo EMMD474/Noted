@@ -7,6 +7,7 @@ interface Note {
     title: string;
     content: string;
     importance: string;
+    favourite: boolean;
     createdAt: string;
 }
 

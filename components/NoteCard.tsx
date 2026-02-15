@@ -22,6 +22,7 @@ interface NoteCardProps {
     content: string;
     createdAt: string;
     importance: string;
+    favourite: boolean;
 }
 
 export const NoteCard: React.FC<NoteCardProps> = ({
@@ -30,10 +31,36 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     content,
     createdAt,
     importance,
+    favourite,
 }) => {
-    const [fav, setFav] = useState(false);
+    const { setNotesUpdated } = useNotes();
+    const [fav, setFav] = useState(favourite);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
+
+    const handleFavouriteToggle = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const newFav = !fav;
+        setFav(newFav);
+
+        try {
+            const res = await fetch(`/api/notes/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ favourite: newFav }),
+            });
+
+            if (res.ok) {
+                setNotesUpdated((prev) => !prev);
+            } else {
+                setFav(!newFav); // Rollback
+                console.error("Failed to update favourite status");
+            }
+        } catch (error) {
+            setFav(!newFav); // Rollback
+            console.error("Error updating favourite status:", error);
+        }
+    };
 
     const getImportanceStyles = (imp: string) => {
         switch (imp.toLowerCase()) {
@@ -167,10 +194,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
                 <CardActions disableSpacing sx={{ px: 2, pb: 2, pt: 1, borderTop: "1px solid", borderColor: "divider" }}>
                     <Tooltip title={fav ? "Remove from favorites" : "Add to favorites"}>
                         <IconButton
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setFav(!fav);
-                            }}
+                            onClick={handleFavouriteToggle}
                             size="small"
                             sx={{
                                 color: fav ? "#f43f5e" : "text.secondary",

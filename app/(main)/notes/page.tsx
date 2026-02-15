@@ -187,6 +187,7 @@ export default function NotesPage() {
                                 content={note.content}
                                 createdAt={note.createdAt}
                                 importance={note.importance}
+                                favourite={note.favourite}
                             />
                         </Grid>
                     ))}

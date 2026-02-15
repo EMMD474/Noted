@@ -109,6 +109,7 @@ export default function UrgentNotes() {
                                 content={note.content}
                                 createdAt={note.createdAt}
                                 importance={note.importance}
+                                favourite={note.favourite}
                             />
                         </Grid>
                     ))}

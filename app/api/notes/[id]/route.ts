@@ -48,7 +48,7 @@ export async function PUT(
     }
 
     try {
-        const { title, content, importance } = await request.json();
+        const { title, content, importance, favourite } = await request.json();
 
         const note = await prisma.note.findUnique({
             where: { id: parseInt(id) },
@@ -64,6 +64,7 @@ export async function PUT(
                 title: title !== undefined ? title : note.title,
                 content: content !== undefined ? content : note.content,
                 importance: importance !== undefined ? importance : note.importance,
+                favourite: favourite !== undefined ? favourite : note.favourite,
             },
         });
 

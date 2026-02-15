@@ -4,16 +4,16 @@ import React, { useEffect } from "react";
 import { Box, Typography, Grid, CircularProgress, Paper, alpha } from "@mui/material";
 import { useNotes } from "@/contexts/NotesProvider";
 import { NoteCard } from "@/components/NoteCard";
-import { LabelImportant, NoteAddOutlined } from "@mui/icons-material";
+import { Favorite, NoteAddOutlined } from "@mui/icons-material";
 
-export default function ImportantPage() {
+export default function FavouritePage() {
     const { notes, getNotes, loading, notesUpdated } = useNotes();
 
     useEffect(() => {
         getNotes();
     }, [notesUpdated]);
 
-    const importantNotes = notes.filter((n) => n.importance.toLowerCase() === "important");
+    const favouriteNotes = notes.filter((n) => n.favourite);
 
     return (
         <Box sx={{ py: 2 }}>
@@ -27,18 +27,18 @@ export default function ImportantPage() {
                         height: 48,
                         borderRadius: 2,
                         mr: 2,
-                        bgcolor: alpha("#f59e0b", 0.1),
-                        color: "#d97706",
+                        bgcolor: alpha("#f43f5e", 0.1),
+                        color: "#f43f5e",
                     }}
                 >
-                    <LabelImportant sx={{ fontSize: 28 }} />
+                    <Favorite sx={{ fontSize: 28 }} />
                 </Box>
                 <Box>
                     <Typography variant="h4" color="text.primary" sx={{ fontWeight: 700 }}>
-                        Important Notes
+                        Favourite Notes
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Key items that require your focus
+                        Your most loved and important thoughts
                     </Typography>
                 </Box>
             </Box>
@@ -58,12 +58,12 @@ export default function ImportantPage() {
                         bgcolor: "background.paper",
                     }}
                 >
-                    <CircularProgress size={40} sx={{ color: "#f59e0b", mb: 2 }} />
+                    <CircularProgress size={40} sx={{ color: "#f43f5e", mb: 2 }} />
                     <Typography variant="body2" color="text.secondary">
-                        Loading important notes...
+                        Loading favourite notes...
                     </Typography>
                 </Paper>
-            ) : importantNotes.length === 0 ? (
+            ) : favouriteNotes.length === 0 ? (
                 <Paper
                     elevation={0}
                     sx={{
@@ -75,7 +75,7 @@ export default function ImportantPage() {
                         borderRadius: 3,
                         border: "2px dashed",
                         borderColor: "divider",
-                        bgcolor: (theme) => alpha("#f59e0b", 0.02),
+                        bgcolor: (theme) => alpha("#f43f5e", 0.02),
                     }}
                 >
                     <Box
@@ -86,22 +86,22 @@ export default function ImportantPage() {
                             width: 64,
                             height: 64,
                             borderRadius: "50%",
-                            bgcolor: alpha("#f59e0b", 0.1),
+                            bgcolor: alpha("#f43f5e", 0.1),
                             mb: 2,
                         }}
                     >
-                        <NoteAddOutlined sx={{ fontSize: 32, color: "#d97706" }} />
+                        <NoteAddOutlined sx={{ fontSize: 32, color: "#f43f5e" }} />
                     </Box>
                     <Typography variant="h6" color="text.primary" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        No important notes
+                        No favourite notes
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Your priority list is clear for now.
+                        Tap the heart icon on any note to save it here!
                     </Typography>
                 </Paper>
             ) : (
                 <Grid container spacing={3}>
-                    {importantNotes.map((note) => (
+                    {favouriteNotes.map((note) => (
                         <Grid key={note.id} size={{ xs: 12, sm: 6, md: 4 }}>
                             <NoteCard
                                 id={note.id}
