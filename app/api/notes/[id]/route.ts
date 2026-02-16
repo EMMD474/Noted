@@ -49,7 +49,6 @@ export async function PUT(
 
     try {
         const { title, content, importance, favourite } = await request.json();
-        console.log("PUT Note Request Body:", { title, content, importance, favourite });
 
         const note = await prisma.note.findUnique({
             where: { id: parseInt(id) },
@@ -76,7 +75,6 @@ export async function PUT(
             },
         });
 
-        console.log("Updated Note Result:", updatedNote);
         return NextResponse.json(updatedNote);
     } catch (error) {
         console.error("PUT Note update error:", error);

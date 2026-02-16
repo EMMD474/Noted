@@ -11,9 +11,10 @@ import {
     alpha,
     Tooltip,
 } from "@mui/material";
-import { Delete, AccessTime } from "@mui/icons-material";
+import { Delete, AccessTime, Edit } from "@mui/icons-material";
 import { useNotes } from "@/contexts/NotesProvider";
 import { DeleteModal } from "./DeleteModal";
+import { CreateNote } from "./CreateNote";
 
 interface TodoItemProps {
     id: number;
@@ -33,6 +34,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     const theme = useTheme();
     const [isChecked, setIsChecked] = useState(checked);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const { setNotesUpdated } = useNotes();
 
     const handleToggle = async () => {
@@ -160,22 +162,38 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                         </Typography>
                     </Stack>
                 </Stack>
-                <Tooltip title="Delete task">
-                    <IconButton
-                        onClick={() => setDeleteModalOpen(true)}
-                        size="small"
-                        sx={{
-                            ml: 1,
-                            color: "text.secondary",
-                            "&:hover": {
-                                color: "error.main",
-                                bgcolor: alpha("#ef4444", 0.1),
-                            },
-                        }}
-                    >
-                        <Delete fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <Stack direction="row" spacing={0.5} sx={{ ml: 1 }}>
+                    <Tooltip title="Edit task">
+                        <IconButton
+                            onClick={() => setEditModalOpen(true)}
+                            size="small"
+                            sx={{
+                                color: "text.secondary",
+                                "&:hover": {
+                                    color: "primary.main",
+                                    bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                },
+                            }}
+                        >
+                            <Edit fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete task">
+                        <IconButton
+                            onClick={() => setDeleteModalOpen(true)}
+                            size="small"
+                            sx={{
+                                color: "text.secondary",
+                                "&:hover": {
+                                    color: "error.main",
+                                    bgcolor: alpha("#ef4444", 0.1),
+                                },
+                            }}
+                        >
+                            <Delete fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
             </Box>
 
             <DeleteModal
@@ -184,6 +202,19 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 itemId={id}
                 itemName={title}
                 itemType="todo"
+            />
+
+            <CreateNote
+                open={editModalOpen}
+                closeModal={() => setEditModalOpen(false)}
+                category="todo"
+                isEditing={true}
+                noteId={id}
+                initialData={{
+                    title,
+                    content: "", // Todos don't have content
+                    importance,
+                }}
             />
         </>
     );
