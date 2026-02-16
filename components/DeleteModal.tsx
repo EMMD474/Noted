@@ -18,15 +18,17 @@ import { useNotes } from "@/contexts/NotesProvider";
 interface DeleteModalProps {
     open: boolean;
     handleClose: () => void;
-    noteId: number;
-    noteTitle: string;
+    itemId: number;
+    itemName: string;
+    itemType: "note" | "todo";
 }
 
 export const DeleteModal: React.FC<DeleteModalProps> = ({
     open,
     handleClose,
-    noteId,
-    noteTitle,
+    itemId,
+    itemName,
+    itemType,
 }) => {
     const { setNotesUpdated } = useNotes();
     const [isDeleting, setIsDeleting] = useState(false);
@@ -34,7 +36,8 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            const res = await fetch(`/api/notes/${noteId}`, {
+            const endpoint = itemType === "note" ? `/api/notes/${itemId}` : `/api/todos/${itemId}`;
+            const res = await fetch(endpoint, {
                 method: "DELETE",
             });
 
@@ -42,14 +45,16 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
                 setNotesUpdated((prev) => !prev);
                 handleClose();
             } else {
-                console.error("Failed to delete note");
+                console.error(`Failed to delete ${itemType}`);
             }
         } catch (error) {
-            console.error("Error deleting note:", error);
+            console.error(`Error deleting ${itemType}:`, error);
         } finally {
             setIsDeleting(false);
         }
     };
+
+    const displayType = itemType.charAt(0).toUpperCase() + itemType.slice(1);
 
     return (
         <Dialog
@@ -77,11 +82,11 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
                 >
                     <WarningAmber sx={{ fontSize: 32, color: "error.main" }} />
                 </Box>
-                <Box sx={{ fontWeight: 700 }}>Delete Note?</Box>
+                <Box sx={{ fontWeight: 700 }}>Delete {displayType}?</Box>
             </DialogTitle>
             <DialogContent sx={{ textAlign: "center", px: 4 }}>
                 <DialogContentText sx={{ color: "text.secondary" }}>
-                    Are you sure you want to delete &quot;<strong>{noteTitle}</strong>&quot;? This action cannot be undone.
+                    Are you sure you want to delete &quot;<strong>{itemName}</strong>&quot;? This action cannot be undone.
                 </DialogContentText>
             </DialogContent>
             <DialogActions sx={{ p: 3, pt: 1, gap: 1 }}>

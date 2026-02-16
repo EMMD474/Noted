@@ -237,8 +237,9 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             <DeleteModal
                 open={deleteModalOpen}
                 handleClose={() => setDeleteModalOpen(false)}
-                noteId={id}
-                noteTitle={title}
+                itemId={id}
+                itemName={title}
+                itemType="note"
             />
 
             <NoteDetailModal
