@@ -11,10 +11,12 @@ import {
     Typography,
     Tooltip,
     alpha,
+    Stack,
 } from "@mui/material";
-import { Delete, Favorite, Share, AccessTime } from "@mui/icons-material";
+import { Delete, Favorite, Share, AccessTime, Edit } from "@mui/icons-material";
 import { DeleteModal } from "./DeleteModal";
 import { NoteDetailModal } from "./NoteDetailModal";
+import { CreateNote } from "./CreateNote";
 import { useNotes } from "@/contexts/NotesProvider";
 
 interface NoteCardProps {
@@ -38,6 +40,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     const [fav, setFav] = useState(favourite);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
 
     // Keep internal state in sync with props
     React.useEffect(() => {
@@ -231,6 +234,27 @@ export const NoteCard: React.FC<NoteCardProps> = ({
                             </IconButton>
                         </span>
                     </Tooltip>
+
+                    <Box sx={{ flexGrow: 1 }} />
+
+                    <Tooltip title="Edit note">
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditModalOpen(true);
+                            }}
+                            size="small"
+                            sx={{
+                                color: "text.secondary",
+                                "&:hover": {
+                                    color: "primary.main",
+                                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                                },
+                            }}
+                        >
+                            <Edit fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
                 </CardActions>
             </Card>
 
@@ -247,6 +271,19 @@ export const NoteCard: React.FC<NoteCardProps> = ({
                 handleClose={() => setDetailModalOpen(false)}
                 title={title}
                 content={content}
+            />
+
+            <CreateNote
+                open={editModalOpen}
+                closeModal={() => setEditModalOpen(false)}
+                category="note"
+                isEditing={true}
+                noteId={id}
+                initialData={{
+                    title,
+                    content,
+                    importance,
+                }}
             />
         </>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Modal,
@@ -15,7 +15,7 @@ import {
     Stack,
     alpha,
 } from "@mui/material";
-import { Close, Add, SubjectOutlined, FormatListBulleted, NotificationsActive } from "@mui/icons-material";
+import { Close, Add, SubjectOutlined, FormatListBulleted, NotificationsActive, Save } from "@mui/icons-material";
 import { useNotes } from "@/contexts/NotesProvider";
 
 const modalStyles = {
@@ -35,12 +35,22 @@ interface CreateNoteProps {
     open: boolean;
     closeModal: () => void;
     category: string;
+    isEditing?: boolean;
+    noteId?: number;
+    initialData?: {
+        title: string;
+        content: string;
+        importance: string;
+    };
 }
 
 export const CreateNote: React.FC<CreateNoteProps> = ({
     open,
     closeModal,
     category,
+    isEditing = false,
+    noteId,
+    initialData,
 }) => {
     const { setNotesUpdated } = useNotes();
     const [title, setTitle] = useState("");
@@ -48,6 +58,16 @@ export const CreateNote: React.FC<CreateNoteProps> = ({
     const [importance, setImportance] = useState("normal");
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({ title: "", details: "" });
+
+    useEffect(() => {
+        if (open && isEditing && initialData) {
+            setTitle(initialData.title);
+            setDetails(initialData.content);
+            setImportance(initialData.importance);
+        } else if (open && !isEditing) {
+            resetForm();
+        }
+    }, [open, isEditing, initialData]);
 
     const resetForm = () => {
         setTitle("");
@@ -73,32 +93,37 @@ export const CreateNote: React.FC<CreateNoteProps> = ({
         return isValid;
     };
 
-    const handleCreate = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
 
         setLoading(true);
         try {
-            const endpoint = category === "todo" ? "/api/todos" : "/api/notes";
+            const endpoint = category === "todo"
+                ? (isEditing ? `/api/todos/${noteId}` : "/api/todos")
+                : (isEditing ? `/api/notes/${noteId}` : "/api/notes");
+
+            const method = isEditing ? "PUT" : "POST";
+
             const body = category === "todo"
                 ? { title, importance }
                 : { title, content: details, importance };
 
             const res = await fetch(endpoint, {
-                method: "POST",
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
             });
 
             if (res.ok) {
                 setNotesUpdated((prev) => !prev);
-                resetForm();
+                if (!isEditing) resetForm();
                 closeModal();
             } else {
-                console.error("Failed to create", category);
+                console.error(`Failed to ${isEditing ? 'update' : 'create'}`, category);
             }
         } catch (error) {
-            console.error("Error creating", category, error);
+            console.error(`Error ${isEditing ? 'updating' : 'creating'}`, category, error);
         } finally {
             setLoading(false);
         }
@@ -163,14 +188,14 @@ export const CreateNote: React.FC<CreateNoteProps> = ({
                             {getCategoryIcon()}
                         </Box>
                         <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            Create {capital}
+                            {isEditing ? `Edit ${capital}` : `Create ${capital}`}
                         </Typography>
                     </Stack>
                 </Box>
 
                 {/* Form */}
                 <Box sx={{ p: 3 }}>
-                    <form onSubmit={handleCreate}>
+                    <form onSubmit={handleSubmit}>
                         <TextField
                             fullWidth
                             label={category === "todo" ? "Task name" : "Title"}
@@ -250,7 +275,7 @@ export const CreateNote: React.FC<CreateNoteProps> = ({
                             fullWidth
                             variant="contained"
                             disabled={loading}
-                            startIcon={<Add />}
+                            startIcon={isEditing ? <Save /> : <Add />}
                             sx={{
                                 py: 1.5,
                                 fontWeight: 600,
@@ -260,7 +285,7 @@ export const CreateNote: React.FC<CreateNoteProps> = ({
                                 },
                             }}
                         >
-                            {loading ? "Creating..." : `Create ${capital}`}
+                            {loading ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save Changes" : `Create ${capital}`)}
                         </Button>
                     </form>
                 </Box>
