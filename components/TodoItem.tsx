@@ -37,6 +37,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     const [editModalOpen, setEditModalOpen] = useState(false);
     const { setNotesUpdated } = useNotes();
 
+    // Sync local state with props
+    React.useEffect(() => {
+        setIsChecked(checked);
+    }, [checked]);
+
     const handleToggle = async () => {
         const newChecked = !isChecked;
         setIsChecked(newChecked);
@@ -48,7 +53,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 body: JSON.stringify({ checked: newChecked }),
             });
 
-            if (!res.ok) {
+            if (res.ok) {
+                setNotesUpdated((prev) => !prev);
+            } else {
                 setIsChecked(!newChecked); // Rollback
                 console.error("Failed to update todo status");
             }
