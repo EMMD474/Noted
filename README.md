@@ -1,110 +1,124 @@
-# Noted
+# 📝 Noted
 
-A full-stack note-taking and task management application built with Next.js, Prisma, and PostgreSQL.
+A modern, full-stack note-taking and task management application built with **Next.js 16**, **Prisma 7**, and **PostgreSQL**.
 
-## Features
+---
 
-- **Notes** - Create, edit, and organize notes with importance levels (normal, important, urgent)
-- **Todos** - Manage tasks with completion tracking and priority settings
-- **Authentication** - Secure JWT-based auth with NextAuth credentials provider
-- **Responsive UI** - Material-UI components with custom theming
+## ✨ Features
 
-## Tech Stack
+- 📑 **Notes Management** - Create and organize notes with priority levels: `Normal`, `Important`, and `Urgent`.
+- ⭐ **Favourite Notes** - Easily toggle and view your most important notes in a dedicated section.
+- ✅ **Smart Todos** - Track your tasks with completion status and priority settings.
+- 🔐 **Dual Authentication** - Secure access via **Credentials** (Email/Password) or **Google OAuth**.
+- 🩺 **Health Monitoring** - Integrated system health checks for database connectivity.
+- 🎨 **Premium UI** - A sleek, responsive interface built with **Material UI 7** and polished with **Sonner** notifications.
 
-- **Framework**: Next.js 16 (App Router) with TypeScript
-- **Database**: PostgreSQL 16 (via Docker)
-- **ORM**: Prisma 7
-- **Authentication**: NextAuth with JWT sessions
-- **UI**: Material-UI (MUI) 7
+---
 
-## Prerequisites
+## 🛠️ Tech Stack
 
-- Node.js 18+
-- pnpm
-- Docker & Docker Compose
+- **Framework**: [Next.js 16.1.2](https://nextjs.org/) (App Router)
+- **Library**: [React 19.2.3](https://react.dev/)
+- **Styling**: [Material UI (MUI) 7](https://mui.com/)
+- **Database**: [PostgreSQL 16](https://www.postgresql.org/) (via Docker)
+- **ORM**: [Prisma 7.2.0](https://www.prisma.io/)
+- **Auth**: [NextAuth.js](https://next-auth.js.org/) (JWT-based)
+- **Toast**: [Sonner](https://sonner.stephanmaximilian.me/)
 
-## Quick Start
+---
 
-1. **Clone and install dependencies**
+## 🚀 Getting Started
+
+### 📋 Prerequisites
+
+- **Node.js**: 18.0.0 or higher
+- **pnpm**: Recommended package manager
+- **Docker**: For running PostgreSQL locally
+
+### 🛠️ Installation
+
+1. **Clone the repository**
    ```bash
    git clone <repo-url>
    cd Noted
+   ```
+
+2. **Install dependencies**
+   ```bash
    pnpm install
    ```
 
-2. **Configure environment**
-
-   Create a `.env` file with your database connection:
+3. **Configure Environment**
+   Create a `.env` file in the root directory:
    ```env
+   # Database
    DATABASE_URL="postgresql://postgres:ep543@localhost:5432/noted"
+   
+   # NextAuth
    NEXTAUTH_SECRET="your-secret-key"
    NEXTAUTH_URL="http://localhost:3000"
+   
+   # Google OAuth (Optional)
+   GOOGLE_CLIENT_ID="your-google-id"
+   GOOGLE_CLIENT_SECRET="your-google-secret"
    ```
 
-3. **Start the database and server**
+4. **Start the Infrastructure**
    ```bash
    ./run.sh
+   # This starts Docker, applies migrations, and runs the dev server
    ```
 
-   Or manually:
-   ```bash
-   docker compose up -d          # Start PostgreSQL
-   npx prisma migrate dev        # Apply migrations
-   pnpm dev                      # Start dev server
-   ```
+---
 
-4. Open [http://localhost:3000](http://localhost:3000)
+## 📂 Project Structure
 
-## Project Structure
-
-```
-app/
-├── (main)/                  # Authenticated routes (notes, todo, calendar)
-├── api/                     # API route handlers
-│   ├── auth/[...nextauth]/  # NextAuth endpoints
-│   ├── notes/               # Notes CRUD
-│   ├── todos/               # Todos CRUD
-│   └── users/               # User registration
-├── login/                   # Login/signup page
-└── providers.tsx            # Client providers wrapper
-
-components/                  # Reusable React components
-contexts/                    # React Context (NotesProvider)
-lib/                         # Utilities (auth config, Prisma client, theme)
-prisma/                      # Schema and migrations
+```bash
+├── app/                  # Next.js App Router (Routes & Layouts)
+│   ├── (main)/           # Authenticated application views
+│   ├── api/              # Backend API endpoints
+│   └── login/            # Authentication pages
+├── components/           # Reusable UI components
+├── contexts/             # State management (NotesProvider)
+├── lib/                  # Auth configuration and Prisma client
+├── prisma/               # Database schema and migrations
+└── public/               # Static assets
 ```
 
-## API Endpoints
+---
 
-All data endpoints require authentication and filter by logged-in user.
+## 🔌 API Reference
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/users` | User registration |
-| GET/POST | `/api/notes` | List/create notes |
-| GET/PUT/DELETE | `/api/notes/[id]` | Single note operations |
-| GET/POST | `/api/todos` | List/create todos |
-| GET/PUT/DELETE | `/api/todos/[id]` | Single todo operations |
+| :--- | :--- | :--- |
+| `POST` | `/api/users` | Register a new user |
+| `GET/POST` | `/api/notes` | List or create notes |
+| `GET/PUT` | `/api/notes/favourite` | Toggle/View favourite notes |
+| `GET/PUT/DELETE` | `/api/notes/[id]` | Perform operations on a specific note |
+| `GET/POST` | `/api/todos` | List or create tasks |
+| `GET/PUT/DELETE` | `/api/todos/[id]` | Perform operations on a specific task |
+| `GET` | `/api/health` | Check database connection status |
 
-## Scripts
+---
 
-```bash
-pnpm dev          # Start development server
-pnpm build        # Production build
-pnpm start        # Start production server
-pnpm lint         # Run ESLint
-```
+## 📜 Available Scripts
 
-## Database Commands
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint checks
+- `pnpm test:db` - Verify database connectivity
 
-```bash
-docker compose up -d           # Start PostgreSQL container
-npx prisma migrate dev         # Apply migrations (development)
-npx prisma migrate deploy      # Apply migrations (production)
-npx prisma generate            # Regenerate Prisma client
-npx prisma studio              # Open database GUI
-```
+---
 
-## License
+## 🐳 Database Management
 
-MIT
+- `docker compose up -d` - Start the database container
+- `npx prisma migrate dev` - Apply migrations and update types
+- `npx prisma studio` - Open the visual database editor
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
