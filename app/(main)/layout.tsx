@@ -69,6 +69,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         { text: "Notes", icon: <SubjectOutlined color="primary" />, path: "/notes" },
         { text: "Todos", icon: <FormatListBulleted color="primary" />, path: "/todo" },
         { text: "Calendar", icon: <CalendarMonth color="primary" />, path: "/calendar" },
+        { text: "Reminders", icon: <ScheduleOutlined color="primary" />, path: "/reminders" },
     ];
 
     const drawerItems2 = [
