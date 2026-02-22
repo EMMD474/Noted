@@ -3,6 +3,7 @@
 import React from "react";
 import { Box, Typography, Paper, Stack, Chip, alpha, LinearProgress } from "@mui/material";
 import { CalendarMonth, Rocket, NotificationsActive, EventRepeat } from "@mui/icons-material";
+import CommingSoon from "@/components/CommingSoon";
 
 export default function CalendarPage() {
     const upcomingFeatures = [
