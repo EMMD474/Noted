@@ -4,6 +4,7 @@ import React from 'react'
 import { Box, Typography, Paper, Stack, Chip, alpha, LinearProgress } from "@mui/material";
 import { CalendarMonth, Rocket, NotificationsActive, EventRepeat, Email, TimeToLeave } from "@mui/icons-material";
 import CommingSoon from "@/components/CommingSoon";
+import Heading from '@/components/Heading';
 
 const RemindersPage = () => {
   const upcomingFeatures = [
@@ -27,31 +28,7 @@ const RemindersPage = () => {
   return (
      <Box sx={{ py: 2 }}>
             {/* Header Section */}
-            <Box sx={{ mb: 4 }}>
-                <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: 48,
-                            height: 48,
-                            borderRadius: 2,
-                            background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                        }}
-                    >
-                        <TimeToLeave sx={{ color: "white", fontSize: 24 }} />
-                    </Box>
-                    <Box>
-                        <Typography variant="h4" color="text.primary" sx={{ fontWeight: 700 }}>
-                            Reminders
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            View your Reminders
-                        </Typography>
-                    </Box>
-                </Stack>
-            </Box>
+           <Heading title="Reminders" description="View your Reminders" icon={<NotificationsActive sx={{ color: "white", fontSize: 24 }} />} />
 
             {/* Coming Soon Card */}
             <CommingSoon upCommingFeatures={upcomingFeatures} />
