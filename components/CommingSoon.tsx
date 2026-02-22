@@ -6,7 +6,6 @@ type CommingSoonProps = {
     upCommingFeatures: {
         title: string;
         description: string;
-        feature: string;
         icon: React.ReactNode;
     }[]
 }
