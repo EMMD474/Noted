@@ -33,6 +33,7 @@ import {
     Star,
     ScheduleOutlined,
     Close,
+    FileOpen
 } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -68,8 +69,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     const drawerItems = [
         { text: "Notes", icon: <SubjectOutlined color="primary" />, path: "/notes" },
         { text: "Todos", icon: <FormatListBulleted color="primary" />, path: "/todo" },
-        { text: "Calendar", icon: <CalendarMonth color="primary" />, path: "/calendar" },
         { text: "Reminders", icon: <ScheduleOutlined color="primary" />, path: "/reminders" },
+        { text: "Markdown", icon: <FileOpen color="primary" />, path: "/markdown" },
+        { text: "Calendar", icon: <CalendarMonth color="primary" />, path: "/calendar" },
     ];
 
     const drawerItems2 = [
