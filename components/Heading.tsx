@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import { Box, Typography, Stack } from '@mui/material'
 import { TimeToLeave } from '@mui/icons-material'
