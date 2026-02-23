@@ -5,6 +5,7 @@ import { Box, Typography, Paper, Stack, Chip, alpha, LinearProgress } from "@mui
 import { CalendarMonth, Rocket, NotificationsActive, EventRepeat } from "@mui/icons-material";
 import CommingSoon from "@/components/CommingSoon";
 import Heading from "@/components/Heading";
+import Calendar from "@/components/ui/Calendar";
 
 export default function CalendarPage() {
     const upcomingFeatures = [
@@ -31,7 +32,8 @@ export default function CalendarPage() {
             <Heading title="Calendar" description="View your notes and todos in a calendar view" icon={<CalendarMonth sx={{ color: "white", fontSize: 24 }} />} />
 
             {/* Coming Soon Card */}
-            <CommingSoon upCommingFeatures={upcomingFeatures} />
+            {/* <CommingSoon upCommingFeatures={upcomingFeatures} /> */}
+            <Calendar />
         </Box>
     );
 }
