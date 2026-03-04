@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import {
     Box,
     Button,
+    Divider,
     TextField,
     Typography,
     IconButton,
@@ -13,6 +14,7 @@ import {
 } from "@mui/material";
 import { AccountCircle, Lock, Mail, Visibility, VisibilityOff } from "@mui/icons-material";
 import { signIn } from "next-auth/react";
+import LoginButton from "./ui/GoogleAuthBtn";
 
 interface SignFormProps {
     toggle: () => void;
@@ -63,7 +65,7 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
             } else {
                 setErrors({ form: data.message || "Registration failed" });
             }
-        } catch (err) {
+        } catch {
             setErrors({ form: "An unexpected error occurred" });
         } finally {
             setLoading(false);
@@ -77,32 +79,46 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                 flexDirection: "column",
                 width: "100%",
                 maxWidth: 420,
-                p: { xs: 3, sm: 5 },
+                p: { xs: 3, sm: 4.5 },
                 bgcolor: theme.palette.background.paper,
-                borderRadius: 3,
-                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.08)",
+                borderRadius: 4,
+                border: "1px solid rgba(15, 23, 42, 0.08)",
+                boxShadow: "0 20px 45px rgba(15, 23, 42, 0.10)",
+                backdropFilter: "blur(8px)",
+                "& .MuiOutlinedInput-root": {
+                    bgcolor: "rgba(248, 250, 252, 0.9)",
+                    borderRadius: 2,
+                    "& fieldset": { borderColor: "rgba(15, 23, 42, 0.16)" },
+                    "&:hover fieldset": { borderColor: "rgba(15, 23, 42, 0.3)" },
+                    "&.Mui-focused fieldset": { borderColor: theme.palette.primary.main },
+                },
             }}
         >
-            {/* Mobile branding */}
             <Typography
-                variant="h4"
+                variant="caption"
                 sx={{
-                    display: { xs: "block", md: "none" },
+                    width: "fit-content",
+                    px: 1.25,
+                    py: 0.5,
+                    mb: 1.5,
+                    borderRadius: 999,
                     fontWeight: 700,
-                    color: theme.palette.primary.main,
-                    mb: 1,
-                    textAlign: "center",
+                    letterSpacing: ".04em",
+                    textTransform: "uppercase",
+                    bgcolor: "rgba(26, 46, 53, 0.08)",
+                    color: "primary.main",
                 }}
             >
-                Noted
+                Start your workspace
             </Typography>
 
             <Typography
-                variant="h5"
+                variant="h4"
                 sx={{
                     fontWeight: 700,
                     color: theme.palette.text.primary,
                     mb: 0.5,
+                    fontSize: { xs: "1.65rem", sm: "1.85rem" },
                 }}
             >
                 Create an account
@@ -114,7 +130,7 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                     mb: 3,
                 }}
             >
-                Get started with your free account
+                Set up your account and start organizing
             </Typography>
 
             <form onSubmit={handleSubmit}>
@@ -133,6 +149,9 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                                 <AccountCircle sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
+                    }}
+                    slotProps={{
+                        inputLabel: { shrink: true },
                     }}
                 />
 
@@ -153,6 +172,9 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                             </InputAdornment>
                         ),
                     }}
+                    slotProps={{
+                        inputLabel: { shrink: true },
+                    }}
                 />
 
                 <TextField
@@ -171,6 +193,9 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                                 <Lock sx={{ color: theme.palette.text.secondary }} />
                             </InputAdornment>
                         ),
+                    }}
+                    slotProps={{
+                        inputLabel: { shrink: true },
                     }}
                 />
 
@@ -202,6 +227,9 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                             </InputAdornment>
                         ),
                     }}
+                    slotProps={{
+                        inputLabel: { shrink: true },
+                    }}
                 />
 
                 {errors.form && (
@@ -217,17 +245,31 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
                     disabled={loading}
                     size="large"
                     sx={{
-                        py: 1.5,
+                        py: 1.4,
                         fontSize: "1rem",
                         fontWeight: 600,
                         mb: 3,
+                        background:
+                            "linear-gradient(135deg, rgba(26,46,53,1) 0%, rgba(58,80,88,1) 100%)",
+                        "&:hover": {
+                            background:
+                                "linear-gradient(135deg, rgba(10,26,31,1) 0%, rgba(26,46,53,1) 100%)",
+                        },
                     }}
                 >
                     {loading ? "Creating account..." : "Create Account"}
                 </Button>
             </form>
 
-            <Box sx={{ textAlign: "center" }}>
+            <Divider sx={{ my: 2 }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary, px: 1 }}>
+                    or continue with
+                </Typography>
+            </Divider>
+
+            <LoginButton />
+
+            <Box sx={{ textAlign: "center", mt: 2 }}>
                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                     Already have an account?{" "}
                     <Typography

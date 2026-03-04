@@ -8,15 +8,62 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── NextAuth required models ────────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("auth_account")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_session")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("auth_verification_token")
+}
+
+// ─── App models ──────────────────────────────────────────────────────────────
+
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
+  id        String    @id @default(cuid())
+  username  String?   @unique
+  email     String    @unique
+  password  String?
+  name      String?
+  image     String?
+  accounts  Account[]
+  sessions  Session[]
   notes     Note[]
   todos     Todo[]
-  createdAt DateTime @default(now()) @map("date_joined")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  createdAt DateTime  @default(now()) @map("date_joined")
+  updatedAt DateTime  @default(now()) @map("updated_at")
 
   @@map("auth_user")
 }
@@ -30,7 +77,7 @@ model Note {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @map("updated_at")
   user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @map("user_id")
+  userId     String   @map("user_id")
 
   @@map("api_note")
 }
@@ -43,7 +90,7 @@ model Todo {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @map("updated_at")
   user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @map("user_id")
+  userId     String   @map("user_id")
 
   @@map("api_todo")
 }

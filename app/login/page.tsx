@@ -20,6 +20,8 @@ export default function LoginPage() {
                 display: "flex",
                 width: "100%",
                 minHeight: "100vh",
+                background:
+                    "radial-gradient(circle at 20% 20%, rgba(99,102,241,0.08), transparent 40%), radial-gradient(circle at 90% 80%, rgba(26,46,53,0.12), transparent 38%)",
             }}
         >
             {/* Left side - Branding */}
@@ -33,6 +35,7 @@ export default function LoginPage() {
                     p: 6,
                     position: "relative",
                     overflow: "hidden",
+                    borderRight: "1px solid rgba(255,255,255,0.12)",
                 }}
             >
                 {/* Decorative circles */}
@@ -126,7 +129,7 @@ export default function LoginPage() {
                                     Task Management
                                 </Typography>
                                 <Typography sx={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
-                                    Stay on top of your todos
+                                    Stay on top of your tasks
                                 </Typography>
                             </Box>
                         </Box>
@@ -165,8 +168,7 @@ export default function LoginPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor: theme.palette.background.default,
-                    p: 3,
+                    p: { xs: 2, sm: 3, md: 5 },
                 }}
             >
                 {showLogin ? (

@@ -1,34 +1,41 @@
 import { NextAuthOptions } from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/auth";
 
 export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma) as any,
     providers: [
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                username: { label: "Username", type: "text" },
+                email: { label: "email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.username || !credentials?.password) {
+                if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
 
                 const user = await prisma.user.findUnique({
-                    where: { username: credentials.username },
+                    where: { email: credentials.email },
                 });
 
-                if (user && (await verifyPassword(credentials.password, user.password))) {
+                if (user && user.password && (await verifyPassword(credentials.password, user.password))) {
                     return {
-                        id: user.id.toString(),
-                        name: user.username,
+                        id: String(user.id),
+                        name: user.username ?? user.email,
                         email: user.email,
                     };
                 }
                 return null;
             },
+        }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }),
     ],
     session: {
