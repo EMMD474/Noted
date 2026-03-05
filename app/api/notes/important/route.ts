@@ -14,7 +14,7 @@ export async function GET() {
 
     try {
         const pendingTodos = await prisma.note.findMany({
-            where: { userId: parseInt((session.user as any).id), importance: "important" },
+            where: { userId: (session.user as any).id as string, importance: "important" },
             orderBy: { createdAt: "desc" },
         });
 

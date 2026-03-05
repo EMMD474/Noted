@@ -13,10 +13,7 @@ export async function GET() {
     }
 
     try {
-        const userId = parseInt((session.user as any).id);
-        if (isNaN(userId)) {
-            return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
-        }
+        const userId = (session.user as any).id as string;
 
         const favouriteNotes = await prisma.note.findMany({
             where: {

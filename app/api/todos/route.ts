@@ -14,7 +14,7 @@ export async function GET() {
 
     try {
         const todos = await prisma.todo.findMany({
-            where: { userId: parseInt((session.user as any).id) },
+            where: { userId: (session.user as any).id as string },
             orderBy: { createdAt: "desc" },
         });
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
                 title,
                 importance: importance || "normal",
                 checked: false,
-                userId: parseInt((session.user as any).id),
+                userId: (session.user as any).id as string,
             },
         });
 

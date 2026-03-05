@@ -23,7 +23,7 @@ export async function GET(
             },
         });
 
-        if (!note || note.userId !== parseInt((session.user as any).id)) {
+        if (!note || String(note.userId) !== (session.user as any).id) {
             return NextResponse.json({ message: "Note not found" }, { status: 404 });
         }
 
@@ -54,9 +54,9 @@ export async function PUT(
             where: { id: parseInt(id) },
         });
 
-        const currentUserId = parseInt((session.user as any).id);
+        const currentUserId = (session.user as any).id as string;
 
-        if (!note || note.userId !== currentUserId) {
+        if (!note || String(note.userId) !== currentUserId) {
             console.warn("Update Error: Note not found or user mismatch", {
                 noteId: id,
                 noteUserId: note?.userId,
@@ -101,7 +101,7 @@ export async function DELETE(
             where: { id: parseInt(id) },
         });
 
-        if (!note || note.userId !== parseInt((session.user as any).id)) {
+        if (!note || String(note.userId) !== (session.user as any).id) {
             return NextResponse.json({ message: "Note not found" }, { status: 404 });
         }
 

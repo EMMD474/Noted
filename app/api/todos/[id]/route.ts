@@ -21,7 +21,7 @@ export async function GET(
             where: { id: parseInt(id) },
         });
 
-        if (!todo || todo.userId !== parseInt((session.user as any).id)) {
+        if (!todo || String(todo.userId) !== (session.user as any).id) {
             return NextResponse.json({ message: "Todo not found" }, { status: 404 });
         }
 
@@ -52,7 +52,7 @@ export async function PUT(
             where: { id: parseInt(id) },
         });
 
-        if (!todo || todo.userId !== parseInt((session.user as any).id)) {
+        if (!todo || String(todo.userId) !== (session.user as any).id) {
             return NextResponse.json({ message: "Todo not found" }, { status: 404 });
         }
 
@@ -90,7 +90,7 @@ export async function DELETE(
             where: { id: parseInt(id) },
         });
 
-        if (!todo || todo.userId !== parseInt((session.user as any).id)) {
+        if (!todo || String(todo.userId) !== (session.user as any).id) {
             return NextResponse.json({ message: "Todo not found" }, { status: 404 });
         }
 
