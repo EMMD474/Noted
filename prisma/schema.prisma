@@ -52,18 +52,19 @@ model VerificationToken {
 // ─── App models ──────────────────────────────────────────────────────────────
 
 model User {
-  id        String    @id @default(cuid())
-  username  String?   @unique
-  email     String    @unique
-  password  String?
-  name      String?
-  image     String?
-  accounts  Account[]
-  sessions  Session[]
-  notes     Note[]
-  todos     Todo[]
-  createdAt DateTime  @default(now()) @map("date_joined")
-  updatedAt DateTime  @default(now()) @map("updated_at")
+  id            String    @id @default(cuid())
+  username      String?   @unique
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+  password      String?
+  name          String?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  notes         Note[]
+  todos         Todo[]
+  createdAt     DateTime  @default(now()) @map("date_joined")
+  updatedAt     DateTime  @default(now()) @map("updated_at")
 
   @@map("auth_user")
 }
