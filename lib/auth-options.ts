@@ -1,4 +1,5 @@
 import dns from "node:dns";
+import https from "node:https";
 dns.setDefaultResultOrder("ipv4first");
 
 import { NextAuthOptions } from "next-auth";
@@ -10,6 +11,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/auth";
 import { isAdminSessionUser } from "@/lib/admin";
+
+const googleIpv4Agent = new https.Agent({ family: 4 });
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -45,17 +48,15 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
             allowDangerousEmailAccountLinking: true,
             authorization: {
-                url: "https://accounts.google.com/o/oauth2/v2/auth",
                 params: {
                     prompt: "consent",
                     access_type: "offline",
                     response_type: "code",
                 },
             },
-            token: "https://oauth2.googleapis.com/token",
-            userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
-            jwks_endpoint: "https://www.googleapis.com/oauth2/v3/certs",
-            issuer: "https://accounts.google.com",
+            httpOptions: {
+                agent: googleIpv4Agent,
+            },
         }),
     ],
     session: {
@@ -111,7 +112,4 @@ export const authOptions: NextAuthOptions = {
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: true,
-    httpOptions: {
-        timeout: 10000,
-    },
 };
