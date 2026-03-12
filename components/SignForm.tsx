@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { AccountCircle, Lock, Mail, Visibility, VisibilityOff } from "@mui/icons-material";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import LoginButton from "./ui/GoogleAuthBtn";
 
 interface SignFormProps {
@@ -21,6 +22,7 @@ interface SignFormProps {
 }
 
 export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
+    const router = useRouter();
     const theme = useTheme();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -57,11 +59,17 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
             const data = await res.json();
 
             if (res.ok) {
-                await signIn("credentials", {
+                const result = await signIn("credentials", {
+                    redirect: false,
                     email,
                     password,
-                    callbackUrl: "/notes",
                 });
+
+                if (result?.error) {
+                    setErrors({ form: "Account created but sign-in failed. Please try logging in." });
+                } else {
+                    router.push("/notes");
+                }
             } else {
                 setErrors({ form: data.message || "Registration failed" });
             }

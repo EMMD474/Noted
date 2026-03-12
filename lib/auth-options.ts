@@ -1,8 +1,7 @@
 import { NextAuthOptions } from "next-auth";
-import { Adapter } from "next-auth/adapters";
 import { JWT } from "next-auth/jwt";
 import { UserRole } from "@prisma/client";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +9,7 @@ import { verifyPassword } from "@/lib/auth";
 import { isAdminSessionUser } from "@/lib/admin";
 
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(prisma) as Adapter,
+    adapter: PrismaAdapter(prisma),
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -29,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 
                 if (user && user.password && (await verifyPassword(credentials.password, user.password))) {
                     return {
-                        id: String(user.id),
+                        id: user.id,
                         name: user.username ?? user.email,
                         email: user.email,
                         role: user.role,
