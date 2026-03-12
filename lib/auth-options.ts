@@ -1,3 +1,6 @@
+import dns from "node:dns";
+dns.setDefaultResultOrder("ipv4first");
+
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import { UserRole } from "@prisma/client";
@@ -42,12 +45,17 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
             allowDangerousEmailAccountLinking: true,
             authorization: {
+                url: "https://accounts.google.com/o/oauth2/v2/auth",
                 params: {
                     prompt: "consent",
                     access_type: "offline",
                     response_type: "code",
                 },
             },
+            token: "https://oauth2.googleapis.com/token",
+            userinfo: "https://openidconnect.googleapis.com/v1/userinfo",
+            jwks_endpoint: "https://www.googleapis.com/oauth2/v3/certs",
+            issuer: "https://accounts.google.com",
         }),
     ],
     session: {
@@ -102,4 +110,8 @@ export const authOptions: NextAuthOptions = {
         signIn: "/login",
     },
     secret: process.env.NEXTAUTH_SECRET,
+    debug: true,
+    httpOptions: {
+        timeout: 10000,
+    },
 };
