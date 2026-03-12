@@ -58,7 +58,7 @@ export const SignForm: React.FC<SignFormProps> = ({ toggle }) => {
 
             if (res.ok) {
                 await signIn("credentials", {
-                    username,
+                    email,
                     password,
                     callbackUrl: "/notes",
                 });

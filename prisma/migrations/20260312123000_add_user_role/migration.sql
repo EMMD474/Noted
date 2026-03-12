@@ -1,0 +1,9 @@
+DO $$
+BEGIN
+    CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
+
+ALTER TABLE "auth_user"
+ADD COLUMN IF NOT EXISTS "role" "UserRole" NOT NULL DEFAULT 'USER';

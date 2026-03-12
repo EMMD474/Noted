@@ -7,7 +7,6 @@ import {
     ListItem,
     ListItemText,
     IconButton,
-    Divider,
     ListItemIcon,
     Typography,
     AppBar,
@@ -17,8 +16,6 @@ import {
     SpeedDial,
     SpeedDialIcon,
     SpeedDialAction,
-    Tooltip,
-    Stack,
     useMediaQuery,
     useTheme,
 } from "@mui/material";
@@ -33,10 +30,11 @@ import {
     Star,
     ScheduleOutlined,
     Close,
-    FileOpen
+    FileOpen,
+    AdminPanelSettings,
 } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { CreateNote } from "@/components/CreateNote";
 import { MenuComp } from "@/components/MenuComp";
 
@@ -73,6 +71,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         { text: "Markdown", icon: <FileOpen color="primary" />, path: "/markdown" },
         { text: "Calendar", icon: <CalendarMonth color="primary" />, path: "/calendar" },
     ];
+
+    if (session?.user?.isAdmin) {
+        drawerItems.push({
+            text: "Admin",
+            icon: <AdminPanelSettings color="primary" />,
+            path: "/admin",
+        });
+    }
 
     const drawerItems2 = [
         { text: "Favourite", icon: <Favorite color="primary" />, path: "/favourite" },

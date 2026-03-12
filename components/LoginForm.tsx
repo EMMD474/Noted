@@ -24,7 +24,7 @@ interface LoginFormProps {
 export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
     const router = useRouter();
     const theme = useTheme();
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
@@ -32,8 +32,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!username || !password) {
-            setError("Please enter both username and password");
+        if (!email || !password) {
+            setError("Please enter both email and password");
             return;
         }
 
@@ -43,12 +43,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
         try {
             const result = await signIn("credentials", {
                 redirect: false,
-                username,
+                email,
                 password,
             });
 
             if (result?.error) {
-                setError("Invalid username or password");
+                setError("Invalid email or password");
             } else {
                 router.push("/notes");
             }
@@ -117,16 +117,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({ toggle }) => {
                     mb: 3,
                 }}
             >
-                Sign in to continue to your account
+                Sign in with your email to continue to your account
             </Typography>
 
             <form onSubmit={handleSubmit}>
                 <TextField
                     fullWidth
-                    label="Username"
+                    label="Email"
+                    type="email"
                     variant="outlined"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     sx={{ mb: 2.5 }}
                     InputProps={{
                         startAdornment: (

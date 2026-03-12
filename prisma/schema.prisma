@@ -10,6 +10,11 @@ datasource db {
 
 // ─── NextAuth required models ────────────────────────────────────────────────
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -56,6 +61,7 @@ model User {
   username      String?   @unique
   email         String    @unique
   emailVerified DateTime? @map("email_verified")
+  role          UserRole  @default(USER)
   password      String?
   name          String?
   image         String?

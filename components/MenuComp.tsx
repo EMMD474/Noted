@@ -9,11 +9,13 @@ import {
     ListItemIcon,
     Typography,
 } from "@mui/material";
-import { Logout, Person } from "@mui/icons-material";
+import { AdminPanelSettings, Logout, Person } from "@mui/icons-material";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export const MenuComp = () => {
     const { data: session } = useSession();
+    const router = useRouter();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -81,6 +83,19 @@ export const MenuComp = () => {
                         {session?.user?.name}
                     </Typography>
                 </MenuItem>
+                {session?.user?.isAdmin && (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose();
+                            router.push("/admin");
+                        }}
+                    >
+                        <ListItemIcon>
+                            <AdminPanelSettings fontSize="small" />
+                        </ListItemIcon>
+                        Admin dashboard
+                    </MenuItem>
+                )}
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <Person fontSize="small" />
