@@ -1,123 +1,142 @@
 # Noted
 
-Noted is a full-stack notes and todo application built with Next.js (App Router), Prisma, and PostgreSQL.
+Noted is a full-stack notes and task app built with Next.js App Router, NextAuth, Prisma, PostgreSQL, and Material UI.
 
 ## Features
 
-- Notes with importance levels (`normal`, `important`, `urgent`)
+- Email/password authentication with NextAuth
+- Google sign-in
+- Notes with `normal`, `important`, and `urgent` priority levels
 - Favourite notes
-- Todos with completion tracking
-- Auth with credentials and NextAuth
-- Health endpoint for DB status
+- Todos with pending and completed states
+- Calendar, markdown, reminders, and filtered category views
+- Admin dashboard for viewing users and workspace stats
 
 ## Tech Stack
 
 - Next.js `16.1.2`
 - React `19.2.3`
+- NextAuth `4.24.13`
 - Prisma `7.x`
-- PostgreSQL `16` (local Docker)
+- PostgreSQL
 - Material UI `7.x`
-- NextAuth `4.x`
 
-## Prerequisites
+## Requirements
 
 - Node.js `20+`
 - `pnpm`
-- Docker (for local PostgreSQL)
+- PostgreSQL running locally or remotely
 
-## Getting Started (Local PostgreSQL)
+## Environment Variables
 
-1. Install dependencies:
+Create `.env.local` for auth values and `.env` for database values if needed.
+
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/noted"
+NEXTAUTH_SECRET="replace-with-a-long-random-secret"
+NEXTAUTH_URL="http://localhost:3000"
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+PRISMA_CLIENT_ENGINE_TYPE=library
+ADMIN_EMAILS="admin@example.com"
+```
+
+Notes:
+
+- `ADMIN_EMAILS` is optional. If set, any matching email is treated as admin.
+- A user can also be made admin by setting `auth_user.role = 'ADMIN'` in the database.
+- For Google OAuth, add `http://localhost:3000/api/auth/callback/google` as an authorized redirect URI in Google Cloud.
+- Add `http://localhost:3000` as an authorized JavaScript origin in Google Cloud.
+
+## Local Setup
+
+1. Install dependencies.
 
 ```bash
 pnpm install
 ```
 
-2. Create `.env` in the project root (or copy from `.env.copy`) and set:
-
-```env
-DATABASE_URL="postgresql://postgres:ep543@localhost:5432/noted"
-NEXTAUTH_SECRET="replace-with-a-long-random-secret"
-NEXTAUTH_URL="http://localhost:3000"
-PRISMA_CLIENT_ENGINE_TYPE=library
-```
-
-3. Start PostgreSQL:
+2. Start PostgreSQL.
 
 ```bash
 docker compose up -d
 ```
 
-4. Run migrations:
+3. Apply migrations.
 
 ```bash
-npx prisma migrate dev
+pnpm prisma migrate deploy
 ```
 
-5. Start the app:
+4. Start the app.
 
 ```bash
 pnpm dev
 ```
 
-You can also use:
+The helper script below starts Docker and the dev server:
 
 ```bash
 ./run.sh
 ```
 
-`run.sh` starts Docker and `pnpm dev`.
+## Google Sign-In Note
 
-## Optional: Supabase Connection
+This project forces IPv4 for the Google provider in NextAuth because some environments time out on Google OAuth requests when Node tries IPv6 first. That workaround lives in `lib/auth-options.ts`.
 
-If you use Supabase connection pooling, set both:
+If Google sign-in still fails:
 
-```env
-DATABASE_URL="postgresql://...pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://...pooler.supabase.com:5432/postgres"
-```
+1. Confirm the redirect URI and origin in Google Cloud match `http://localhost:3000`.
+2. Restart the dev server after changing auth config or env vars.
+3. Check the server logs for `SIGNIN_OAUTH_ERROR`.
 
-Then run:
+## Admin Access
 
-```bash
-./migrate.sh
-```
+Admins can access `/admin` to view:
 
-`migrate.sh` uses `DIRECT_URL` for migrations.
+- total users
+- verified accounts
+- notes and todo counts
+- recent signups
+- most active users
+- all user records with role and content totals
 
-## API Endpoints
+The admin users API is available at `/api/admin/users`.
 
-| Method | Endpoint | Description |
+## Scripts
+
+- `pnpm dev` - start the local dev server
+- `pnpm build` - build the production app
+- `pnpm start` - run the production server
+- `pnpm lint` - run ESLint
+- `pnpm test:db` - test database connectivity
+- `./run.sh` - start Docker and the dev server
+- `./stop.sh` - stop Docker services
+
+## API Routes
+
+| Method | Route | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/users` | Register user |
+| `POST` | `/api/users` | Register a user |
 | `GET/POST` | `/api/notes` | List or create notes |
 | `GET` | `/api/notes/important` | List important notes |
 | `GET` | `/api/notes/urgent` | List urgent notes |
-| `GET/PUT` | `/api/notes/favourite` | List/toggle favourites |
-| `GET/PUT/DELETE` | `/api/notes/[id]` | Read/update/delete note |
+| `GET` | `/api/notes/favourite` | List favourite notes |
+| `GET/PUT/DELETE` | `/api/notes/[id]` | Read, update, or delete a note |
 | `GET/POST` | `/api/todos` | List or create todos |
 | `GET` | `/api/todos/pending` | List pending todos |
-| `GET/PUT/DELETE` | `/api/todos/[id]` | Read/update/delete todo |
+| `GET/PUT/DELETE` | `/api/todos/[id]` | Read, update, or delete a todo |
+| `GET` | `/api/admin/users` | Admin dashboard data |
 | `GET` | `/api/health` | Health check |
 | `GET/POST` | `/api/auth/[...nextauth]` | NextAuth handlers |
 
-## Useful Scripts
-
-- `pnpm dev` - Start local dev server
-- `pnpm build` - Build production bundle
-- `pnpm start` - Run production server
-- `pnpm lint` - Run ESLint
-- `pnpm test:db` - Check DB connectivity
-- `./run.sh` - Start Docker + dev server
-- `./stop.sh` - Stop Docker services
-
 ## Project Structure
 
-```bash
-app/            # Next.js routes and API handlers
-components/     # Shared UI components
-contexts/       # React context state
-lib/            # Auth, Prisma, utilities
-prisma/         # Schema and migrations
-public/         # Static assets
+```text
+app/         Next.js routes and API handlers
+components/  Shared UI components
+contexts/    React state providers
+lib/         Auth, Prisma, and server utilities
+prisma/      Schema, client config, and migrations
+public/      Static assets
 ```
