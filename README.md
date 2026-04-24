@@ -1,13 +1,17 @@
 # Noted
 
-Noted is a full-stack notes and todo application built with Next.js (App Router), Prisma, and PostgreSQL.
+Noted is a full-stack note-taking and task management application built with Next.js (App Router), Prisma, and PostgreSQL.
 
 ## Features
 
 - Notes with importance levels (`normal`, `important`, `urgent`)
 - Favourite notes
 - Todos with completion tracking
-- Auth with credentials and NextAuth
+- Calendar view (FullCalendar)
+- Reminders
+- Markdown editor
+- Admin dashboard
+- Authentication with credentials and Google OAuth (NextAuth)
 - Health endpoint for DB status
 
 ## Tech Stack
@@ -18,6 +22,8 @@ Noted is a full-stack notes and todo application built with Next.js (App Router)
 - PostgreSQL `16` (local Docker)
 - Material UI `7.x`
 - NextAuth `4.x`
+- FullCalendar `6.x`
+- Sonner (toast notifications)
 
 ## Prerequisites
 
@@ -40,6 +46,10 @@ DATABASE_URL="postgresql://postgres:ep543@localhost:5432/noted"
 NEXTAUTH_SECRET="replace-with-a-long-random-secret"
 NEXTAUTH_URL="http://localhost:3000"
 PRISMA_CLIENT_ENGINE_TYPE=library
+
+# Optional: Google OAuth
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
 3. Start PostgreSQL:
@@ -60,13 +70,11 @@ npx prisma migrate dev
 pnpm dev
 ```
 
-You can also use:
+Or use the convenience script that starts Docker and the dev server together:
 
 ```bash
 ./run.sh
 ```
-
-`run.sh` starts Docker and `pnpm dev`.
 
 ## Optional: Supabase Connection
 
@@ -87,6 +95,8 @@ Then run:
 
 ## API Endpoints
 
+All data endpoints require authentication and filter by the logged-in user.
+
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `POST` | `/api/users` | Register user |
@@ -103,21 +113,39 @@ Then run:
 
 ## Useful Scripts
 
-- `pnpm dev` - Start local dev server
-- `pnpm build` - Build production bundle
-- `pnpm start` - Run production server
-- `pnpm lint` - Run ESLint
-- `pnpm test:db` - Check DB connectivity
-- `./run.sh` - Start Docker + dev server
-- `./stop.sh` - Stop Docker services
+- `pnpm dev` — Start local dev server
+- `pnpm build` — Build production bundle
+- `pnpm start` — Run production server
+- `pnpm lint` — Run ESLint
+- `pnpm test:db` — Check DB connectivity
+- `./run.sh` — Start Docker + dev server
+- `./stop.sh` — Stop Docker services
+- `./migrate.sh` — Run migrations via `DIRECT_URL` (Supabase)
 
 ## Project Structure
 
-```bash
-app/            # Next.js routes and API handlers
-components/     # Shared UI components
-contexts/       # React context state
-lib/            # Auth, Prisma, utilities
-prisma/         # Schema and migrations
-public/         # Static assets
+```
+app/
+├── (main)/          # Authenticated routes
+│   ├── admin/       # Admin dashboard
+│   ├── calendar/    # Calendar view
+│   ├── favourite/   # Favourited notes
+│   ├── important/   # Important notes
+│   ├── markdown/    # Markdown editor
+│   ├── notes/       # All notes
+│   ├── pending/     # Pending todos
+│   ├── reminders/   # Reminders
+│   ├── todo/        # Todos
+│   └── urgent/      # Urgent notes
+├── api/             # API route handlers
+├── login/           # Login / sign-up page
+├── layout.tsx       # Root layout
+└── providers.tsx    # Client providers (Session, Theme, Notes)
+
+components/          # Shared UI components
+contexts/            # React Context (NotesProvider)
+lib/                 # Auth config, Prisma client, utilities
+prisma/              # Schema and migrations
+public/              # Static assets
+scripts/             # Helper scripts (DB connection test, etc.)
 ```
