@@ -107,20 +107,20 @@ This starts both the Next.js dev server and Electron app concurrently.
 ### Build for Distribution
 
 ```bash
-# Linux
+# Linux (via Makefile)
 make electron-build
-# or: pnpm electron:build
+
+# Linux
+pnpm electron:build:linux
 
 # Windows
-make electron-build:win
-# or: pnpm electron:build:win
+pnpm electron:build:win
 
 # macOS
-make electron-build:mac
-# or: pnpm electron:build:mac
+pnpm electron:build:mac
 ```
 
-Built packages are in `dist-electron/`:
+Built packages are output to `dist-electron/` (gitignored):
 - `Noted-0.1.0.AppImage` — Linux AppImage
 - `noted_0.1.0_amd64.deb` — Debian package
 - `linux-unpacked/` — Unpacked Linux app
@@ -207,6 +207,6 @@ contexts/            # React Context (NotesProvider)
 lib/                 # Auth config, Prisma client, utilities
 prisma/              # Schema and migrations
 electron/            # Electron main process and preload
-dist-electron/       # Built Electron packages
+dist-electron/       # Built Electron packages (gitignored)
 scripts/             # Helper scripts (DB connection test, etc.)
 ```
