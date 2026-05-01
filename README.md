@@ -1,6 +1,6 @@
 # Noted
 
-Noted is a full-stack notes and task app built with Next.js App Router, NextAuth, Prisma, PostgreSQL, and Material UI.
+Noted is a full-stack note-taking and task management application built with Next.js (App Router), Prisma, and PostgreSQL. It also works as a standalone desktop app via Electron.
 
 ## Features
 
@@ -8,9 +8,13 @@ Noted is a full-stack notes and task app built with Next.js App Router, NextAuth
 - Google sign-in
 - Notes with `normal`, `important`, and `urgent` priority levels
 - Favourite notes
-- Todos with pending and completed states
-- Calendar, markdown, reminders, and filtered category views
-- Admin dashboard for viewing users and workspace stats
+- Todos with completion tracking
+- Calendar view (FullCalendar)
+- Reminders
+- Markdown editor
+- Admin dashboard
+- Health endpoint for DB status
+- **Desktop app** (Electron) for offline-capable experience
 
 ## Tech Stack
 
@@ -20,6 +24,9 @@ Noted is a full-stack notes and task app built with Next.js App Router, NextAuth
 - Prisma `7.x`
 - PostgreSQL
 - Material UI `7.x`
+- FullCalendar `6.x`
+- Sonner (toast notifications)
+- Electron `35.x`
 
 ## Requirements
 
@@ -29,16 +36,41 @@ Noted is a full-stack notes and task app built with Next.js App Router, NextAuth
 
 ## Environment Variables
 
-Create `.env.local` for auth values and `.env` for database values if needed.
+### Quick Start
+
+```bash
+make run
+```
+
+This starts Docker and the dev server. Or manually:
+
+```bash
+make install
+make docker
+make db-migrate
+make dev
+```
+
+### Manual Setup
+
+1. Install dependencies:
+
+```bash
+make install
+# or: pnpm install
+```
+
+2. Create `.env` in the project root (copy from `.env.copy`) and set:
 
 ```env
-DATABASE_URL="postgresql://postgres:password@localhost:5432/noted"
+DATABASE_URL="postgresql://postgres:ep543@localhost:5432/noted"
 NEXTAUTH_SECRET="replace-with-a-long-random-secret"
 NEXTAUTH_URL="http://localhost:3000"
+PRISMA_CLIENT_ENGINE_TYPE=library
+
+# Optional: Google OAuth
 GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
-PRISMA_CLIENT_ENGINE_TYPE=library
-ADMIN_EMAILS="admin@example.com"
 ```
 
 Notes:
@@ -48,37 +80,58 @@ Notes:
 - For Google OAuth, add `http://localhost:3000/api/auth/callback/google` as an authorized redirect URI in Google Cloud.
 - Add `http://localhost:3000` as an authorized JavaScript origin in Google Cloud.
 
-## Local Setup
-
-1. Install dependencies.
+3. Start PostgreSQL:
 
 ```bash
-pnpm install
+make docker
+# or: docker compose up -d
 ```
 
-2. Start PostgreSQL.
+4. Apply migrations.
 
 ```bash
-docker compose up -d
+make db-migrate
+# or: npx prisma migrate dev
 ```
 
-3. Apply migrations.
+5. Start the app.
 
 ```bash
-pnpm prisma migrate deploy
+make dev
+# or: pnpm dev
 ```
 
-4. Start the app.
+## Desktop App (Electron)
+
+### Development Mode
 
 ```bash
-pnpm dev
+make electron-dev
+# or: pnpm electron:dev
 ```
 
-The helper script below starts Docker and the dev server:
+This starts both the Next.js dev server and Electron app concurrently.
+
+### Build for Distribution
 
 ```bash
-./run.sh
+# Linux (via Makefile)
+make electron-build
+
+# Linux
+pnpm electron:build:linux
+
+# Windows
+pnpm electron:build:win
+
+# macOS
+pnpm electron:build:mac
 ```
+
+Built packages are output to `dist-electron/` (gitignored):
+- `Noted-0.1.0.AppImage` — Linux AppImage
+- `noted_0.1.0_amd64.deb` — Debian package
+- `linux-unpacked/` — Unpacked Linux app
 
 ## Google Sign-In Note
 
@@ -103,19 +156,33 @@ Admins can access `/admin` to view:
 
 The admin users API is available at `/api/admin/users`.
 
-## Scripts
+## Makefile Commands
 
-- `pnpm dev` - start the local dev server
-- `pnpm build` - build the production app
-- `pnpm start` - run the production server
-- `pnpm lint` - run ESLint
-- `pnpm test:db` - test database connectivity
-- `./run.sh` - start Docker and the dev server
-- `./stop.sh` - stop Docker services
+| Command | Description |
+|---------|-------------|
+| `make install` | Install dependencies |
+| `make dev` | Start Next.js dev server |
+| `make build` | Build Next.js for production |
+| `make start` | Start production server |
+| `make electron` | Run Electron app (after dev server) |
+| `make electron-build` | Build Electron app |
+| `make electron-dev` | Run Next.js + Electron in dev mode |
+| `make docker` | Start Docker services |
+| `make docker-down` | Stop Docker services |
+| `make db` | Open Prisma Studio |
+| `make db-migrate` | Apply database migrations |
+| `make db-generate` | Generate Prisma client |
+| `make lint` | Run ESLint |
+| `make clean` | Clean build artifacts |
+| `make push` | Push to GitHub |
+| `make commit MSG='message'` | Commit and push changes |
+| `make run` | Run Docker + dev server |
 
-## API Routes
+## API Endpoints
 
-| Method | Route | Description |
+All data endpoints require authentication and filter by the logged-in user.
+
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `POST` | `/api/users` | Register a user |
 | `GET/POST` | `/api/notes` | List or create notes |
@@ -132,11 +199,29 @@ The admin users API is available at `/api/admin/users`.
 
 ## Project Structure
 
-```text
-app/         Next.js routes and API handlers
-components/  Shared UI components
-contexts/    React state providers
-lib/         Auth, Prisma, and server utilities
-prisma/      Schema, client config, and migrations
-public/      Static assets
+```
+app/
+├── (main)/          # Authenticated routes
+│   ├── admin/       # Admin dashboard
+│   ├── calendar/    # Calendar view
+│   ├── favourite/   # Favourited notes
+│   ├── important/   # Important notes
+│   ├── markdown/    # Markdown editor
+│   ├── notes/       # All notes
+│   ├── pending/     # Pending todos
+│   ├── reminders/   # Reminders
+│   ├── todo/        # Todos
+│   └── urgent/      # Urgent notes
+├── api/             # API route handlers
+├── login/           # Login / sign-up page
+├── layout.tsx       # Root layout
+└── providers.tsx    # Client providers (Session, Theme, Notes)
+
+components/          # Shared UI components
+contexts/            # React Context (NotesProvider)
+lib/                 # Auth config, Prisma client, utilities
+prisma/              # Schema and migrations
+electron/            # Electron main process and preload
+dist-electron/       # Built Electron packages (gitignored)
+scripts/             # Helper scripts (DB connection test, etc.)
 ```
