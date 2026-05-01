@@ -1,6 +1,6 @@
 # Noted
 
-Noted is a full-stack note-taking and task management application built with Next.js (App Router), Prisma, and PostgreSQL.
+Noted is a full-stack note-taking and task management application built with Next.js (App Router), Prisma, and PostgreSQL. It also works as a standalone desktop app via Electron.
 
 ## Features
 
@@ -13,6 +13,7 @@ Noted is a full-stack note-taking and task management application built with Nex
 - Admin dashboard
 - Authentication with credentials and Google OAuth (NextAuth)
 - Health endpoint for DB status
+- **Desktop app** (Electron) for offline-capable experience
 
 ## Tech Stack
 
@@ -24,6 +25,7 @@ Noted is a full-stack note-taking and task management application built with Nex
 - NextAuth `4.x`
 - FullCalendar `6.x`
 - Sonner (toast notifications)
+- Electron `35.x`
 
 ## Prerequisites
 
@@ -33,13 +35,31 @@ Noted is a full-stack note-taking and task management application built with Nex
 
 ## Getting Started (Local PostgreSQL)
 
+### Quick Start
+
+```bash
+make run
+```
+
+This starts Docker and the dev server. Or manually:
+
+```bash
+make install
+make docker
+make db-migrate
+make dev
+```
+
+### Manual Setup
+
 1. Install dependencies:
 
 ```bash
-pnpm install
+make install
+# or: pnpm install
 ```
 
-2. Create `.env` in the project root (or copy from `.env.copy`) and set:
+2. Create `.env` in the project root (copy from `.env.copy`) and set:
 
 ```env
 DATABASE_URL="postgresql://postgres:ep543@localhost:5432/noted"
@@ -55,26 +75,55 @@ GOOGLE_CLIENT_SECRET="your-google-client-secret"
 3. Start PostgreSQL:
 
 ```bash
-docker compose up -d
+make docker
+# or: docker compose up -d
 ```
 
 4. Run migrations:
 
 ```bash
-npx prisma migrate dev
+make db-migrate
+# or: npx prisma migrate dev
 ```
 
 5. Start the app:
 
 ```bash
-pnpm dev
+make dev
+# or: pnpm dev
 ```
 
-Or use the convenience script that starts Docker and the dev server together:
+## Desktop App (Electron)
+
+### Development Mode
 
 ```bash
-./run.sh
+make electron-dev
+# or: pnpm electron:dev
 ```
+
+This starts both the Next.js dev server and Electron app concurrently.
+
+### Build for Distribution
+
+```bash
+# Linux
+make electron-build
+# or: pnpm electron:build
+
+# Windows
+make electron-build:win
+# or: pnpm electron:build:win
+
+# macOS
+make electron-build:mac
+# or: pnpm electron:build:mac
+```
+
+Built packages are in `dist-electron/`:
+- `Noted-0.1.0.AppImage` — Linux AppImage
+- `noted_0.1.0_amd64.deb` — Debian package
+- `linux-unpacked/` — Unpacked Linux app
 
 ## Optional: Supabase Connection
 
@@ -93,6 +142,28 @@ Then run:
 
 `migrate.sh` uses `DIRECT_URL` for migrations.
 
+## Makefile Commands
+
+| Command | Description |
+|---------|-------------|
+| `make install` | Install dependencies |
+| `make dev` | Start Next.js dev server |
+| `make build` | Build Next.js for production |
+| `make start` | Start production server |
+| `make electron` | Run Electron app (after dev server) |
+| `make electron-build` | Build Electron app |
+| `make electron-dev` | Run Next.js + Electron in dev mode |
+| `make docker` | Start Docker services |
+| `make docker-down` | Stop Docker services |
+| `make db` | Open Prisma Studio |
+| `make db-migrate` | Apply database migrations |
+| `make db-generate` | Generate Prisma client |
+| `make lint` | Run ESLint |
+| `make clean` | Clean build artifacts |
+| `make push` | Push to GitHub |
+| `make commit MSG='message'` | Commit and push changes |
+| `make run` | Run Docker + dev server |
+
 ## API Endpoints
 
 All data endpoints require authentication and filter by the logged-in user.
@@ -110,17 +181,6 @@ All data endpoints require authentication and filter by the logged-in user.
 | `GET/PUT/DELETE` | `/api/todos/[id]` | Read/update/delete todo |
 | `GET` | `/api/health` | Health check |
 | `GET/POST` | `/api/auth/[...nextauth]` | NextAuth handlers |
-
-## Useful Scripts
-
-- `pnpm dev` — Start local dev server
-- `pnpm build` — Build production bundle
-- `pnpm start` — Run production server
-- `pnpm lint` — Run ESLint
-- `pnpm test:db` — Check DB connectivity
-- `./run.sh` — Start Docker + dev server
-- `./stop.sh` — Stop Docker services
-- `./migrate.sh` — Run migrations via `DIRECT_URL` (Supabase)
 
 ## Project Structure
 
@@ -146,6 +206,7 @@ components/          # Shared UI components
 contexts/            # React Context (NotesProvider)
 lib/                 # Auth config, Prisma client, utilities
 prisma/              # Schema and migrations
-public/              # Static assets
+electron/            # Electron main process and preload
+dist-electron/       # Built Electron packages
 scripts/             # Helper scripts (DB connection test, etc.)
 ```
