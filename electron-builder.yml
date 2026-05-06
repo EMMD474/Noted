@@ -4,11 +4,11 @@ directories:
   output: dist-electron
   buildResources: build
 files:
-  - .next
+  - .next/standalone
+  - .next/static
   - package.json
-  - node_modules
-  - prisma
   - electron
+  - public
 extraMetadata:
   main: electron/main.js
 asar: true

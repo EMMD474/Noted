@@ -12,11 +12,12 @@
     "postinstall": "prisma generate",
     "test:db": "node scripts/test-db-connection.js",
     "electron:dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "npm run electron:compile && next build && electron-builder",
+    "electron:build": "pnpm electron:compile && next build && pnpm electron:copy-static && electron-builder",
+    "electron:build:win": "pnpm electron:compile && next build && pnpm electron:copy-static && electron-builder --win",
+    "electron:build:mac": "pnpm electron:compile && next build && pnpm electron:copy-static && electron-builder --mac",
+    "electron:build:linux": "pnpm electron:compile && next build && pnpm electron:copy-static && electron-builder --linux",
     "electron:compile": "tsc -p electron/tsconfig.json",
-    "electron:build:win": "next build && electron-builder --win",
-    "electron:build:mac": "next build && electron-builder --mac",
-    "electron:build:linux": "next build && electron-builder --linux"
+    "electron:copy-static": "cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
