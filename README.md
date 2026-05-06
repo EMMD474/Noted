@@ -26,6 +26,7 @@ Noted is a full-stack note-taking and task management application built with Nex
 - Material UI `7.x`
 - FullCalendar `6.x`
 - Sonner (toast notifications)
+- Supabase JS client
 - Electron `35.x`
 
 ## Requirements
@@ -103,6 +104,8 @@ make dev
 
 ## Desktop App (Electron)
 
+The Electron app wraps the Next.js app and spawns it as a standalone server process at runtime. It includes window state persistence (size, position, maximized), a full application menu with keyboard shortcuts, and a white-flash-free startup.
+
 ### Development Mode
 
 ```bash
@@ -110,7 +113,7 @@ make electron-dev
 # or: pnpm electron:dev
 ```
 
-This starts both the Next.js dev server and Electron app concurrently.
+This starts both the Next.js dev server and Electron app concurrently via `concurrently` + `wait-on`.
 
 ### Build for Distribution
 
@@ -128,10 +131,20 @@ pnpm electron:build:win
 pnpm electron:build:mac
 ```
 
+The build pipeline compiles the Electron TypeScript source, builds Next.js in standalone mode, copies static assets, then runs `electron-builder`.
+
 Built packages are output to `dist-electron/` (gitignored):
-- `Noted-0.1.0.AppImage` — Linux AppImage
-- `noted_0.1.0_amd64.deb` — Debian package
-- `linux-unpacked/` — Unpacked Linux app
+
+**Linux**
+- `Noted-0.1.0.AppImage` — portable AppImage
+- `noted_0.1.0_amd64.deb` — Debian/Ubuntu package
+
+**Windows**
+- NSIS installer (with desktop and Start Menu shortcuts)
+- Portable executable
+
+**macOS**
+- `Noted-0.1.0.dmg` — disk image
 
 ## Google Sign-In Note
 
@@ -167,7 +180,7 @@ The admin users API is available at `/api/admin/users`.
 | `make electron` | Run Electron app (after dev server) |
 | `make electron-build` | Build Electron app |
 | `make electron-dev` | Run Next.js + Electron in dev mode |
-| `make docker` | Start Docker services |
+| `make docker` / `make docker-up` | Start Docker services |
 | `make docker-down` | Stop Docker services |
 | `make db` | Open Prisma Studio |
 | `make db-migrate` | Apply database migrations |
